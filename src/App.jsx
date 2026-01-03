@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, MessageCircle, ChevronDown } from 'lucide-react';
+import { MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, MessageCircle, ChevronDown, AlertTriangle } from 'lucide-react';
 
 // --- COMPONENTE DE ANIMAÇÃO (REVEAL ON SCROLL) ---
 const Reveal = ({ children, delay = 0 }) => {
@@ -30,12 +30,29 @@ const Reveal = ({ children, delay = 0 }) => {
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [ageVerified, setAgeVerified] = useState(true); // Inicialmente true para evitar piscar
 
   useEffect(() => {
+    // Verificar se o utilizador já confirmou a idade anteriormente
+    const verified = localStorage.getItem('hoogAgeVerified');
+    if (!verified) {
+        setAgeVerified(false); // Se não confirmou, mostra o modal
+    }
+
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleAgeConfirm = (isOver18) => {
+      if (isOver18) {
+          setAgeVerified(true);
+          localStorage.setItem('hoogAgeVerified', 'true');
+      } else {
+          // Redireciona para o Google se for menor
+          window.location.href = "https://www.google.com";
+      }
+  };
 
   const beers = [
     { 
@@ -90,8 +107,42 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-beer-dark text-gray-100 font-sans selection:bg-beer-gold selection:text-black overflow-x-hidden">
+    <div className={`min-h-screen bg-beer-dark text-gray-100 font-sans selection:bg-beer-gold selection:text-black overflow-x-hidden ${!ageVerified ? 'h-screen overflow-hidden' : ''}`}>
       
+      {/* --- AGE GATE (MODAL DE IDADE) --- */}
+      {!ageVerified && (
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center">
+            <div className="max-w-md w-full bg-gray-900 border border-beer-gold/30 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+                {/* Efeito decorativo de fundo */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-beer-gold to-transparent"></div>
+                
+                <img src="/images/logo-oficial.png" alt="Hoog Bier" className="h-20 mx-auto mb-8 animate-pulse-slow" />
+                
+                <h2 className="text-2xl font-bold text-white mb-2 uppercase">Bem-vindo à Hoog Bier</h2>
+                <p className="text-gray-400 mb-8">Você tem 18 anos ou mais?</p>
+                
+                <div className="flex flex-col gap-4">
+                    <button 
+                        onClick={() => handleAgeConfirm(true)}
+                        className="w-full bg-beer-gold hover:bg-white text-black font-bold py-4 rounded-xl uppercase tracking-widest transition-all transform hover:-translate-y-1 shadow-lg"
+                    >
+                        Sim, tenho +18
+                    </button>
+                    <button 
+                        onClick={() => handleAgeConfirm(false)}
+                        className="w-full bg-transparent border border-gray-700 text-gray-500 hover:text-white hover:border-white font-bold py-4 rounded-xl uppercase tracking-widest transition-all"
+                    >
+                        Não, sou menor
+                    </button>
+                </div>
+                
+                <p className="text-[10px] text-gray-600 mt-6 uppercase tracking-widest">
+                    Beba com moderação. Se beber, não dirija.
+                </p>
+            </div>
+        </div>
+      )}
+
       {/* WhatsApp Flutuante com Pulso */}
       <a href="https://wa.me/553125641240" target="_blank" className="fixed bottom-6 right-6 z-[60] group">
         <span className="absolute inset-0 rounded-full bg-green-500 opacity-70 animate-ping"></span>
@@ -112,7 +163,7 @@ function App() {
             <div className="hidden md:block">
               <div className="ml-10 flex items-center space-x-8">
                 {['Início', 'Cervejas', 'A Fábrica'].map((item, i) => (
-                    <a key={i} href={`#${item.toLowerCase().replace(' ', '')}`} className="relative text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-white transition-colors group">
+                    <a key={i} href={`#${item.toLowerCase().replace(' ', '').replace('á', 'a')}`} className="relative text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-white transition-colors group">
                         {item}
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-beer-gold transition-all duration-300 group-hover:w-full"></span>
                     </a>
@@ -198,7 +249,7 @@ function App() {
                 {[
                     { icon: CheckCircle, title: "Puro Malte", desc: "Sem milho ou arroz. Apenas insumos nobres importados." },
                     { icon: Clock, title: "Maturação Lenta", desc: "Respeitamos o tempo da natureza. Sem aceleradores químicos." },
-                    { icon: Truck, title: "Logística Própria", desc: "Entrega rápida e refrigerada para toda região de Contagem e Bh." }
+                    { icon: Truck, title: "Logística Própria", desc: "Entrega rápida e refrigerada para toda região de Contagem." }
                 ].map((item, idx) => (
                     <Reveal key={idx} delay={idx * 200}>
                         <div className="flex flex-col items-center text-center p-10 rounded-3xl border border-white/5 bg-gradient-to-b from-gray-900 to-transparent hover:border-beer-gold/30 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-500 group">
@@ -298,7 +349,11 @@ function App() {
       </section>
 
       {/* --- A FÁBRICA --- */}
-      <section id="fabrica" className="py-24 relative bg-black border-t border-white/10">
+      <section id="afabrica" className="py-24 relative bg-black border-t border-white/10">
+        {/* IMAGEM DE FUNDO RESTAURADA */}
+        <div className="absolute inset-0 bg-[url('/images/hero-bg.jpg')] bg-cover bg-center bg-fixed opacity-20 grayscale"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+        
         <div className="max-w-7xl mx-auto px-4 relative z-10">
             <Reveal>
                 <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -312,7 +367,7 @@ function App() {
                         </p>
 
                         <div className="space-y-6">
-                            <div className="flex gap-5 items-center p-6 bg-white/5 rounded-2xl border border-white/5 hover:border-beer-gold/30 transition-colors">
+                            <div className="flex gap-5 items-center p-6 bg-white/5 rounded-2xl border border-white/5 hover:border-beer-gold/30 transition-colors backdrop-blur-md">
                                 <Truck className="text-beer-gold" size={32} />
                                 <div>
                                     <h4 className="text-lg font-bold text-white uppercase mb-1">Delivery de Chopp</h4>
@@ -322,7 +377,7 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-gray-900 to-black p-10 lg:p-12 border border-white/10 rounded-3xl relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-gray-900/90 to-black/90 p-10 lg:p-12 border border-white/10 rounded-3xl relative overflow-hidden backdrop-blur-md">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-beer-gold blur-[80px] opacity-20"></div>
                         
                         <h4 className="text-2xl font-black text-white mb-8 uppercase">Visite-nos</h4>

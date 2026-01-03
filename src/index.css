@@ -4,6 +4,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Garante que o menu não tape o título */
 }
 
 /* Animação de Flutuação Suave para as Garrafas */
@@ -16,7 +17,7 @@ html {
   animation: float 6s ease-in-out infinite;
 }
 
-/* Textura de Grão (Noise) para dar aspeto "Premium/Papel" */
+/* Textura de Grão (Noise) */
 .bg-noise {
   position: relative;
 }
