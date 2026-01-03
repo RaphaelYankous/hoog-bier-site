@@ -1,102 +1,108 @@
 import React, { useState } from 'react';
-import { MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, ShoppingBag, Store, Star, Clock, CheckCircle, ArrowRight } from 'lucide-react';
+import { MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, ShoppingBag, Store, Star, Clock, CheckCircle, Package, Wine, Disc } from 'lucide-react';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // DADOS DAS CERVEJAS
-  // Nota: Mudei a ordem para deixar as mais populares (Pilsen/IPA) no topo
   const beers = [
     { 
       id: "pilsen",
       name: "Hoog Pilsen", 
       style: "Premium Lager", 
-      tagline: "Leveza e equilíbrio.",
-      desc: "Cerveja de baixa fermentação, coloração dourada brilhante e colarinho persistente. O equilíbrio perfeito entre o dulçor do malte e o lúpulo, resultando em altíssima drinkability.",
+      tagline: "Leveza, equilíbrio e refrescância pura.",
+      desc: "Nossa interpretação da paixão nacional. Uma cerveja de baixa fermentação, coloração dourada brilhante e colarinho branco persistente. O segredo está no equilíbrio perfeito entre o dulçor suave do malte e o lúpulo nobre, resultando em uma bebida de altíssima drinkability. Perfeita para o clima tropical.",
       abv: "4.5%", 
       ibu: "9",
       temp: "0 - 4ºC",
-      pairing: "Churrasco, saladas, queijos frescos e dias quentes.",
-      color: "from-yellow-300 to-yellow-500", // Cor do Brilho
-      image: "/images/pilsen.jpg"
+      pairing: "Churrasco, saladas, queijos frescos, petiscos de boteco e dias de sol.",
+      color: "from-yellow-300 to-yellow-500",
+      image: "/images/pilsen.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: true }
     },
     { 
       id: "ipa",
       name: "Hoog IPA", 
       style: "American IPA", 
-      tagline: "Explosão de lúpulos cítricos.",
-      desc: "Uma American IPA clássica. Coloração acobreada, corpo médio e amargor limpo e pronunciado. No aroma, destacam-se notas de frutas tropicais e cítricas provenientes do dry hopping.",
+      tagline: "Explosão de aromas e lúpulos cítricos.",
+      desc: "Uma American IPA de respeito para paladares exigentes. Apresenta coloração acobreada, corpo médio e um amargor limpo e pronunciado, sem ser agressivo. No aroma, o dry hopping generoso libera notas intensas de frutas tropicais, maracujá e cítricos. Uma cerveja com personalidade forte.",
       abv: "6.5%", 
       ibu: "50",
       temp: "4 - 8ºC",
-      pairing: "Hambúrgueres, comida mexicana, queijo gorgonzola.",
+      pairing: "Hambúrgueres artesanais, comida mexicana, carnes gordurosas e queijo gorgonzola.",
       color: "from-orange-500 to-amber-600",
-      image: "/images/ipa.jpg"
+      image: "/images/ipa.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: true }
     },
     { 
       id: "california",
       name: "California Common", 
       style: "Steam Beer", 
-      tagline: "A híbrida com personalidade.",
-      desc: "Estilo histórico californiano e um dos diferenciais da Hoog. Fermentada com levedura Lager em temperatura de Ale, trazendo notas rústicas, tostadas e amadeiradas.",
+      tagline: "A híbrida histórica com personalidade rústica.",
+      desc: "Um dos grandes diferenciais da Hoog Bier. Este estilo histórico californiano é fermentado com levedura Lager em temperaturas de Ale. O resultado é uma cerveja única: notas tostadas, amadeiradas e um perfil maltado rústico, mantendo o frescor e a leveza de uma lager. Uma viagem no tempo em cada gole.",
       abv: "5.0%", 
       ibu: "35",
       temp: "5 - 8ºC",
-      pairing: "Carne de porco, grãos e pratos condimentados.",
+      pairing: "Carne de porco assada, pratos com grãos, feijoada e pratos condimentados.",
       color: "from-amber-600 to-amber-800",
-      image: "/images/california.jpg"
+      image: "/images/california.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: true }
     },
     { 
       id: "seculo",
       name: "Século XIII", 
       style: "Red Lager", 
-      tagline: "Maltada e avermelhada.",
-      desc: "Lager de coloração rubi intensa. O destaque vai para a complexidade dos maltes, que trazem notas de caramelo, toffee e leve tostado, com final limpo.",
+      tagline: "A tradição maltada de cor avermelhada.",
+      desc: "Uma Lager que encanta pelos olhos e pelo paladar. De coloração rubi intensa, essa receita foca na complexidade dos maltes especiais, trazendo notas evidentes de caramelo e toffee, e um leve tostado. Apesar da riqueza de sabores, mantém o final limpo e seco típico das Lagers.",
       abv: "4.8%", 
       ibu: "12",
       temp: "4 - 7ºC",
-      pairing: "Carpaccio, massas com molho vermelho, frango assado.",
+      pairing: "Carpaccio, massas com molho vermelho, frango assado e queijos de meia cura.",
       color: "from-red-600 to-red-900",
-      image: "/images/red.jpg"
+      image: "/images/red.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: false }
     },
     { 
       id: "weiss",
       name: "Hoog Weiss", 
       style: "Hefeweizen", 
-      tagline: "Trigo clássico alemão.",
-      desc: "Cerveja de trigo não filtrada (turva) com espuma cremosa. A levedura traz os aromas característicos de banana e cravo. Baixo amargor e corpo aveludado.",
+      tagline: "O clássico trigo alemão com textura aveludada.",
+      desc: "Cerveja de trigo feita seguindo a escola alemã. Não filtrada (turva), possui uma espuma densa e cremosa. A levedura especial é a estrela, trazendo os aromas característicos de banana e cravo sem adição de frutas ou especiarias. Baixo amargor, corpo aveludado e muito nutritiva.",
       abv: "4.7%", 
       ibu: "10",
       temp: "3 - 6ºC",
-      pairing: "Salsichas alemãs, peixes, frutos do mar e sushi.",
+      pairing: "Salsichas alemãs, peixes, frutos do mar, sushi e saladas.",
       color: "from-yellow-200 to-yellow-400",
-      image: "/images/weiss.jpg"
+      image: "/images/weiss.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: true }
     },
     { 
       id: "paleale",
       name: "Hoog Pale Ale", 
       style: "American Pale Ale", 
-      tagline: "Refrescante e aromática.",
-      desc: "Versão mais leve e clara que a IPA, mas ainda focada no lúpulo. Traz aromas cítricos e florais com um amargor moderado, ideal para quem busca sabor sem peso.",
+      tagline: "Refrescante, aromática e fácil de beber.",
+      desc: "A porta de entrada para o mundo dos lúpulos. Uma versão mais leve e clara que a IPA, mas ainda focada no aroma. Traz notas cítricas e florais com um amargor moderado e muito agradável. Ideal para quem busca sabor intenso sem o peso alcoólico.",
       abv: "5.0%", 
       ibu: "25",
       temp: "4 - 7ºC",
-      pairing: "Frango grelhado, pizzas variadas e petiscos fritos.",
+      pairing: "Frango grelhado, pizzas variadas, petiscos fritos e hambúrguer de frango.",
       color: "from-amber-400 to-orange-500",
-      image: "/images/paleale.jpg"
+      image: "/images/paleale.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: true }
     },
     { 
       id: "stout",
       name: "Hoog Stout", 
       style: "English Stout", 
-      tagline: "Café e chocolate amargo.",
-      desc: "Cerveja escura, quase preta, produzida com maltes torrados que remetem a café e chocolate. Apesar da cor, possui corpo médio-leve e final seco, fácil de beber.",
+      tagline: "Notas intensas de café e chocolate amargo.",
+      desc: "Cerveja escura, quase preta, produzida com um blend de maltes torrados que remetem a café expresso e chocolate amargo. Apesar da cor profunda, possui corpo médio-leve e final seco, sendo muito fácil de beber, diferente das Stouts mais pesadas e doces.",
       abv: "4.8%", 
       ibu: "20",
       temp: "6 - 10ºC",
-      pairing: "Sobremesas à base de chocolate, carnes de panela.",
+      pairing: "Sobremesas à base de chocolate, brownie, carnes de panela e queijos azuis.",
       color: "from-gray-700 to-gray-900",
-      image: "/images/stout.jpg"
+      image: "/images/stout.jpg",
+      formats: { longNeck: true, growler: true, keg30: true, keg50: false }
     }
   ];
 
@@ -117,7 +123,7 @@ function App() {
                 <a href="#cervejas" className="hover:text-beer-gold text-sm font-bold uppercase tracking-widest transition-colors">Cervejas</a>
                 <a href="#fabrica" className="hover:text-beer-gold text-sm font-bold uppercase tracking-widest transition-colors">A Fábrica</a>
                 <a href="https://wa.me/553125641240" target="_blank" className="bg-beer-gold hover:bg-white text-black px-6 py-3 rounded-md text-sm font-black transition-all hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] flex items-center gap-2 uppercase tracking-wider transform hover:-translate-y-1">
-                  <Truck size={18} /> Delivery
+                  <Truck size={18} /> Pedir Agora
                 </a>
               </div>
             </div>
@@ -149,28 +155,28 @@ function App() {
             <div className="absolute inset-0 bg-gradient-to-t from-beer-dark via-beer-dark/40 to-black/60"></div>
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-10">
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto mt-10">
           <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-beer-gold/90 text-black mb-8 shadow-[0_0_20px_rgba(245,158,11,0.3)] transform hover:scale-105 transition-transform cursor-default">
             <Star className="w-4 h-4 fill-black" />
-            <span className="text-sm font-bold tracking-widest uppercase">Cervejaria Artesanal em Contagem</span>
+            <span className="text-xs md:text-sm font-bold tracking-widest uppercase">Primeira Cervejaria Artesanal de Contagem-MG</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-black text-white mb-6 leading-[0.9] uppercase drop-shadow-2xl tracking-tighter">
-            Direto <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-beer-gold via-yellow-200 to-beer-gold">Da Fonte</span>
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black text-white mb-6 leading-tight uppercase drop-shadow-2xl tracking-tight">
+            O Melhor Chope <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-beer-gold via-yellow-200 to-beer-gold">Puro Malte Para Seu Evento</span>
           </h1>
           
           <p className="mt-8 text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-12 leading-relaxed font-medium drop-shadow-lg">
-            Produzimos cerveja com alma, sem atalhos. <br className="hidden md:block"/> 
-            O frescor do tanque entregue no seu evento.
+             Barris de 30L e 50L, Long Necks e Growlers. <br className="hidden md:block"/> 
+             Qualidade e frescor entregues onde você estiver.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <a href="https://wa.me/553125641240" target="_blank" className="bg-beer-gold text-black font-black py-5 px-12 rounded-lg hover:bg-white transition-all transform hover:-translate-y-1 shadow-[0_10px_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-3 text-lg uppercase tracking-widest">
-              <ShoppingBag size={24} /> Pedir Chopp
+              <ShoppingBag size={24} /> Fazer Pedido
             </a>
             <a href="#cervejas" className="group border-2 border-white/30 hover:border-white text-white hover:text-beer-gold font-bold py-5 px-12 rounded-lg transition-all flex items-center justify-center gap-3 text-lg uppercase tracking-widest bg-black/20 backdrop-blur-md hover:bg-black/40">
-              <Beer size={24} className="group-hover:rotate-12 transition-transform" /> Ver Estilos
+              <Beer size={24} className="group-hover:rotate-12 transition-transform" /> Ver Produtos
             </a>
           </div>
         </div>
@@ -205,7 +211,7 @@ function App() {
         </div>
       </section>
 
-      {/* --- VITRINE DE CERVEJAS (COM HOLOFOTE) --- */}
+      {/* --- VITRINE DE CERVEJAS --- */}
       <section id="cervejas" className="py-24 bg-beer-dark relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-32">
@@ -214,16 +220,14 @@ function App() {
             <div className="w-32 h-1.5 bg-beer-gold mx-auto mt-8 rounded-full"></div>
           </div>
 
-          <div className="space-y-48"> {/* Espaçamento grande para cada cerveja brilhar */}
+          <div className="space-y-48"> 
             {beers.map((beer, index) => (
               <div key={beer.id} className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 group`}>
                 
-                {/* --- LADO DA FOTO (HOLOFOTE) --- */}
+                {/* --- LADO DA FOTO --- */}
                 <div className="w-full lg:w-1/2 relative perspective-1000">
-                  {/* Glow colorido atrás da cerveja */}
                   <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-b ${beer.color} opacity-20 blur-[90px] rounded-full group-hover:opacity-30 transition-opacity duration-1000`}></div>
                   
-                  {/* Container da Imagem com Animação */}
                   <div className="relative z-10 mx-auto w-full max-w-[400px] aspect-[4/5] flex items-center justify-center transition-transform duration-700 hover:scale-110 motion-safe:animate-float">
                       <img 
                         src={beer.image} 
@@ -234,11 +238,9 @@ function App() {
                             e.target.nextSibling.style.display = 'flex';
                         }}
                       />
-                      {/* Fallback caso falte a foto */}
                       <div className="hidden w-[300px] h-[400px] bg-gray-900/80 backdrop-blur-sm border-2 border-dashed border-gray-700 rounded-3xl flex-col items-center justify-center text-center p-8 shadow-2xl">
                            <Beer size={80} className="text-beer-gold mb-6 opacity-80" />
                            <p className="text-white font-bold uppercase text-xl">{beer.name}</p>
-                           <p className="text-sm text-gray-500 mt-4">Imagem não encontrada:<br/>{beer.image}</p>
                       </div>
                   </div>
                 </div>
@@ -258,7 +260,6 @@ function App() {
                     {beer.desc}
                   </p>
 
-                  {/* Grid Técnico Moderno */}
                   <div className="grid grid-cols-3 gap-4 border-t border-gray-800 pt-8 mb-8">
                     <div className="bg-gray-900/50 p-4 border border-gray-800 rounded-xl text-center hover:border-beer-gold/30 transition-colors">
                         <span className="block text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">ABV</span>
@@ -271,6 +272,39 @@ function App() {
                     <div className="bg-gray-900/50 p-4 border border-gray-800 rounded-xl text-center hover:border-beer-gold/30 transition-colors">
                         <span className="block text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Temp.</span>
                         <span className="text-2xl font-bold text-white">{beer.temp}</span>
+                    </div>
+                  </div>
+
+                  {/* DISPONIBILIDADE/FORMATOS */}
+                  <div className="bg-gray-900/30 border border-gray-700 rounded-xl p-6 mb-8">
+                    <h4 className="text-sm text-beer-gold font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <Package size={16} /> Disponível em:
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                        {beer.formats.longNeck && (
+                            <div className="flex items-center gap-3 text-gray-300">
+                                <Wine size={20} className="text-gray-500" /> 
+                                <span>Long Neck <span className="text-xs text-gray-500 block">355ml</span></span>
+                            </div>
+                        )}
+                        {beer.formats.growler && (
+                            <div className="flex items-center gap-3 text-gray-300">
+                                <Store size={20} className="text-gray-500" /> 
+                                <span>Growler PET <span className="text-xs text-gray-500 block">1L e 2L (Retirada)</span></span>
+                            </div>
+                        )}
+                         {beer.formats.keg30 && (
+                            <div className="flex items-center gap-3 text-gray-300">
+                                <Disc size={20} className="text-gray-500" /> 
+                                <span>Barril P <span className="text-xs text-gray-500 block">30 Litros</span></span>
+                            </div>
+                        )}
+                        {beer.formats.keg50 && (
+                            <div className="flex items-center gap-3 text-gray-300">
+                                <Disc size={20} className="text-gray-500" /> 
+                                <span>Barril G <span className="text-xs text-gray-500 block">50 Litros</span></span>
+                            </div>
+                        )}
                     </div>
                   </div>
 
