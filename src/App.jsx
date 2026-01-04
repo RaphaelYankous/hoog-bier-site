@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, MessageCircle, ChevronDown, AlertTriangle, Thermometer, Droplets } from 'lucide-react';
+import { 
+  MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, 
+  ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, 
+  MessageCircle, ChevronDown, Utensils, Calculator, Users, PartyPopper 
+} from 'lucide-react';
 
 // --- COMPONENTE DE ANIMAÇÃO (REVEAL ON SCROLL) ---
 const Reveal = ({ children, delay = 0 }) => {
@@ -31,31 +35,45 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false); 
+  
+  // Estado da Calculadora
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calcGuests, setCalcGuests] = useState(20);
+  const [calcHours, setCalcHours] = useState(4);
+  const [calcResult, setCalcResult] = useState(0);
 
   useEffect(() => {
-    /* // DESCOMENTAR EM PRODUÇÃO:
-    const verified = localStorage.getItem('hoogAgeVerified');
-    if (verified) setAgeVerified(true);
-    */
-
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+    
+    // Cálculo inicial
+    calculateChopp(20, 4);
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleAgeConfirm = (isOver18) => {
       if (isOver18) {
           setAgeVerified(true);
-          // localStorage.setItem('hoogAgeVerified', 'true'); 
       } else {
           window.location.href = "https://www.google.com";
       }
+  };
+
+  const calculateChopp = (guests, hours) => {
+      // Média: 1.5L a 2L por pessoa em 4 horas. Vamos usar 0.5L por hora por pessoa (bebedor)
+      // Considerando que nem todos bebem, aplicamos um fator de 70% de bebedores ativos se for numero total
+      const liters = Math.ceil((guests * 0.7) * (hours * 0.4)); 
+      setCalcResult(liters < 10 ? 10 : liters); // Mínimo 10L
+      setCalcGuests(guests);
+      setCalcHours(hours);
   };
 
   const beers = [
     { 
       id: "pilsen", name: "Hoog Pilsen", style: "Premium Lager", tagline: "Leveza e Equilíbrio",
       desc: "Nossa interpretação da paixão nacional. Dourada, brilhante e com colarinho persistente. Equilíbrio perfeito entre malte e lúpulo.",
+      pairing: "Petiscos fritos, saladas leves, frango a passarinho.",
       abv: "4.5%", ibu: "9", temp: "0-4ºC", 
       color: "from-yellow-300 to-yellow-500", image: "/images/pilsen.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: true }
@@ -63,6 +81,7 @@ function App() {
     { 
       id: "ipa", name: "Hoog IPA", style: "American IPA", tagline: "Explosão Cítrica",
       desc: "Para paladares exigentes. Acobreada, corpo médio e amargor limpo. Dry hopping generoso com notas de frutas tropicais.",
+      pairing: "Hambúrguer artesanal, carnes gordurosas, comida mexicana.",
       abv: "6.5%", ibu: "50", temp: "4-8ºC", 
       color: "from-orange-500 to-amber-600", image: "/images/ipa.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: true }
@@ -70,6 +89,7 @@ function App() {
     { 
       id: "california", name: "California Common", style: "Steam Beer", tagline: "Híbrida e Rústica",
       desc: "Um diferencial da Hoog. Levedura Lager fermentada em temperatura de Ale. Notas tostadas e amadeiradas únicas.",
+      pairing: "Carne de porco assada, queijos curados.",
       abv: "5.0%", ibu: "35", temp: "5-8ºC", 
       color: "from-amber-600 to-amber-800", image: "/images/california.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: true }
@@ -77,13 +97,15 @@ function App() {
     { 
       id: "seculo", name: "Século XIII", style: "Red Lager", tagline: "Tradição Avermelhada",
       desc: "Coloração rubi intensa e complexidade de maltes especiais. Notas evidentes de caramelo e toffee com final limpo.",
+      pairing: "Carpaccio, massas com molho vermelho, frango assado.",
       abv: "4.8%", ibu: "12", temp: "4-7ºC", 
       color: "from-red-600 to-red-900", image: "/images/red.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: false }
     },
     { 
       id: "weiss", name: "Hoog Weiss", style: "Hefeweizen", tagline: "Trigo Aveludado",
-      desc: "Não filtrada e com espuma cremosa. Aromas clássicos de banana e cravo provenientes da fermentação. Muito nutritiva.",
+      desc: "Não filtrada e com espuma cremosa. Aromas clássicos de banana e cravo provenientes da fermentação.",
+      pairing: "Salsichas alemãs, peixes, sushi e saladas.",
       abv: "4.7%", ibu: "10", temp: "3-6ºC", 
       color: "from-yellow-200 to-yellow-400", image: "/images/weiss.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: true }
@@ -91,6 +113,7 @@ function App() {
     { 
       id: "paleale", name: "Hoog Pale Ale", style: "American Pale Ale", tagline: "Refrescante e Aromática",
       desc: "A porta de entrada para os lúpulos. Mais leve que a IPA, traz notas cítricas e florais com amargor moderado.",
+      pairing: "Pizzas variadas, queijo cheddar, empanadas.",
       abv: "5.0%", ibu: "25", temp: "4-7ºC", 
       color: "from-amber-400 to-orange-500", image: "/images/paleale.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: true }
@@ -98,6 +121,7 @@ function App() {
     { 
       id: "stout", name: "Hoog Stout", style: "English Stout", tagline: "Café e Chocolate",
       desc: "Escura com maltes torrados que remetem a café expresso e chocolate amargo. Corpo médio-leve e final seco.",
+      pairing: "Sobremesas de chocolate, sorvete de creme, gorgonzola.",
       abv: "4.8%", ibu: "20", temp: "6-10ºC", 
       color: "from-gray-700 to-gray-900", image: "/images/stout.jpg",
       formats: { longNeck: true, growler: true, keg30: true, keg50: false }
@@ -107,6 +131,62 @@ function App() {
   return (
     <div className={`min-h-screen bg-beer-dark text-gray-100 font-sans selection:bg-beer-gold selection:text-black overflow-x-hidden ${!ageVerified ? 'h-screen overflow-hidden' : ''}`}>
       
+      {/* --- MODAL CALCULADORA --- */}
+      {showCalculator && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-gray-900 border border-beer-gold/30 rounded-2xl p-8 max-w-md w-full relative">
+            <button onClick={() => setShowCalculator(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X /></button>
+            
+            <div className="text-center mb-8">
+              <Calculator className="mx-auto text-beer-gold mb-3" size={40} />
+              <h3 className="text-2xl font-black uppercase text-white">Calculadora de Chopp</h3>
+              <p className="text-gray-400 text-sm">Planeje sua festa sem desperdício</p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2">
+                  <Users size={16}/> Número de Convidados
+                </label>
+                <input 
+                  type="range" min="5" max="200" step="5" 
+                  value={calcGuests} 
+                  onChange={(e) => calculateChopp(parseInt(e.target.value), calcHours)}
+                  className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-right text-white font-bold mt-1">{calcGuests} Pessoas</div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2">
+                  <Clock size={16}/> Duração da Festa
+                </label>
+                <input 
+                  type="range" min="1" max="12" step="1" 
+                  value={calcHours} 
+                  onChange={(e) => calculateChopp(calcGuests, parseInt(e.target.value))}
+                  className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-right text-white font-bold mt-1">{calcHours} Horas</div>
+              </div>
+
+              <div className="bg-white/10 p-4 rounded-xl text-center border border-white/10">
+                <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">Recomendação Aproximada</span>
+                <span className="text-4xl font-black text-beer-gold">{calcResult} Litros</span>
+              </div>
+
+              <a 
+                href={`https://wa.me/553125641240?text=Olá! Fiz um cálculo no site. Preciso de aproximadamente ${calcResult} litros de chopp para ${calcGuests} pessoas.`} 
+                target="_blank"
+                className="block w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-center uppercase tracking-widest transition-colors"
+              >
+                Solicitar Orçamento
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* --- AGE GATE --- */}
       {!ageVerified && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center">
@@ -148,6 +228,12 @@ function App() {
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-beer-gold transition-all duration-300 group-hover:w-full"></span>
                     </a>
                 ))}
+                
+                {/* Botão Calculadora Navbar */}
+                <button onClick={() => setShowCalculator(true)} className="text-sm font-bold uppercase tracking-widest text-beer-gold hover:text-white transition-colors flex items-center gap-1">
+                  <Calculator size={16}/> Calc. Chopp
+                </button>
+
                 <a href="https://wa.me/553125641240" target="_blank" className="bg-gradient-to-r from-beer-gold to-yellow-400 hover:to-yellow-300 text-black px-8 py-3 rounded-full text-xs font-black transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] flex items-center gap-2 uppercase tracking-wider hover:-translate-y-1">
                   <Truck size={16} /> Pedir Agora
                 </a>
@@ -165,6 +251,7 @@ function App() {
             <div className="px-4 pt-4 pb-8 space-y-2 text-center">
               <a href="#home" onClick={() => setIsMenuOpen(false)} className="block py-4 text-beer-gold font-bold uppercase tracking-widest border-b border-white/5">Início</a>
               <a href="#cervejas" onClick={() => setIsMenuOpen(false)} className="block py-4 text-beer-gold font-bold uppercase tracking-widest border-b border-white/5">Cervejas</a>
+              <button onClick={() => {setShowCalculator(true); setIsMenuOpen(false)}} className="w-full py-4 text-beer-gold font-bold uppercase tracking-widest border-b border-white/5 flex items-center justify-center gap-2"><Calculator size={16}/> Calculadora</button>
               <a href="#afabrica" onClick={() => setIsMenuOpen(false)} className="block py-4 text-beer-gold font-bold uppercase tracking-widest border-b border-white/5">A Fábrica</a>
             </div>
           </div>
@@ -208,9 +295,9 @@ function App() {
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
                     <ShoppingBag size={20} /> Fazer Pedido
                 </a>
-                <a href="#cervejas" className="border border-white/20 hover:border-white/50 text-white font-bold py-5 px-10 rounded-xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-widest bg-white/5 backdrop-blur-sm hover:bg-white/10">
-                    <Beer size={20} /> Ver Catálogo
-                </a>
+                <button onClick={() => setShowCalculator(true)} className="border border-white/20 hover:border-white/50 text-white font-bold py-5 px-10 rounded-xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-widest bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:text-beer-gold">
+                    <Calculator size={20} /> Calcular Festa
+                </button>
             </div>
           </Reveal>
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/30 animate-bounce"><ChevronDown size={32} /></div>
@@ -240,7 +327,7 @@ function App() {
         </div>
       </section>
 
-      {/* --- CATÁLOGO REPAGINADO (GRID DE CARDS PREMIUM) --- */}
+      {/* --- CATÁLOGO --- */}
       <section id="cervejas" className="py-32 bg-beer-dark relative overflow-hidden bg-noise">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
@@ -256,18 +343,15 @@ function App() {
               <Reveal key={beer.id} delay={index * 100}>
                 <div className="group relative bg-white/5 border border-white/10 rounded-[2rem] p-6 pt-0 hover:border-beer-gold/50 transition-all duration-500 hover:bg-white/10 flex flex-col h-full hover:shadow-[0_0_50px_-10px_rgba(245,158,11,0.2)]">
                     
-                    {/* Imagem Flutuante (Sai do card) */}
+                    {/* Imagem Flutuante */}
                     <div className="relative -mt-20 mb-6 flex justify-center perspective-1000">
-                        {/* Glow colorido atrás da garrafa */}
                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-b ${beer.color} opacity-30 blur-[60px] rounded-full group-hover:opacity-50 transition-opacity duration-700`}></div>
-                        
                         <img 
                             src={beer.image} 
                             alt={beer.name} 
                             className="h-64 w-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 z-10"
                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                         />
-                        {/* Fallback caso sem imagem */}
                         <div className="hidden h-64 w-48 bg-gray-800/80 rounded-2xl flex-col items-center justify-center text-center border border-gray-700 z-10">
                             <Beer size={40} className="text-beer-gold mb-2" />
                             <span className="text-xs text-gray-400">Sem Foto</span>
@@ -289,7 +373,15 @@ function App() {
                             {beer.desc}
                         </p>
 
-                        {/* Grid Técnico (Icons) */}
+                        {/* HARMONIZAÇÃO (NOVO) */}
+                        <div className="bg-black/40 rounded-lg p-3 mb-4 text-xs text-gray-400 flex flex-col items-center gap-2 border border-white/5">
+                          <div className="flex items-center gap-1 font-bold uppercase text-beer-gold tracking-wider">
+                             <Utensils size={12} /> Combina com:
+                          </div>
+                          <span>{beer.pairing}</span>
+                        </div>
+
+                        {/* Grid Técnico */}
                         <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-4 mb-4 mt-auto">
                             <div className="flex flex-col items-center">
                                 <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">ABV</span>
@@ -307,13 +399,13 @@ function App() {
 
                         {/* Ícones de Disponibilidade */}
                         <div className="bg-black/20 rounded-xl p-3 flex justify-center gap-4 text-gray-500">
-                            {beer.formats.longNeck && <div className="tooltip group/icon relative"><Beer size={18} className="hover:text-beer-gold transition-colors" /><span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Long Neck</span></div>}
-                            {beer.formats.growler && <div className="tooltip group/icon relative"><Store size={18} className="hover:text-beer-gold transition-colors" /><span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Growler</span></div>}
-                            {beer.formats.keg30 && <div className="tooltip group/icon relative"><Package size={18} className="hover:text-beer-gold transition-colors" /><span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/icon:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Barril</span></div>}
+                            {beer.formats.longNeck && <div className="tooltip group/icon relative"><Beer size={18} className="hover:text-beer-gold transition-colors" /></div>}
+                            {beer.formats.growler && <div className="tooltip group/icon relative"><Store size={18} className="hover:text-beer-gold transition-colors" /></div>}
+                            {beer.formats.keg30 && <div className="tooltip group/icon relative"><Package size={18} className="hover:text-beer-gold transition-colors" /></div>}
                         </div>
 
                         {/* Botão de Ação */}
-                        <a href="https://wa.me/553125641240" target="_blank" className="mt-6 w-full py-3 rounded-xl border border-white/10 hover:border-beer-gold hover:bg-beer-gold hover:text-black text-white text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 group/btn">
+                        <a href={`https://wa.me/553125641240?text=Olá, gostaria de pedir a cerveja ${beer.name}`} target="_blank" className="mt-6 w-full py-3 rounded-xl border border-white/10 hover:border-beer-gold hover:bg-beer-gold hover:text-black text-white text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 group/btn">
                             Pedir Agora <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                         </a>
                     </div>
@@ -324,8 +416,49 @@ function App() {
         </div>
       </section>
 
+      {/* --- NOVA SEÇÃO: EXPERIÊNCIA GASTRONÔMICA (QUEBRA VISUAL) --- */}
+      <section className="py-20 bg-beer-gold text-beer-dark relative overflow-hidden">
+        {/* Elemento decorativo de fundo */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+           <Beer size={400} className="absolute -right-20 -bottom-20 rotate-12" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center gap-12">
+          <div className="md:w-1/2">
+            <Reveal>
+              <h3 className="text-4xl md:text-5xl font-display font-black uppercase leading-tight mb-4">
+                Mais que Cerveja,<br/> Uma Experiência
+              </h3>
+              <p className="text-lg font-medium mb-6 leading-relaxed opacity-90">
+                Acreditamos que uma boa cerveja merece uma boa comida. Nossas receitas são pensadas para harmonizar com momentos especiais, desde o churrasco de domingo até aquele jantar sofisticado.
+              </p>
+              <a href="https://instagram.com/cervejariahoogbier" target="_blank" className="inline-flex items-center gap-2 border-b-2 border-black pb-1 font-bold hover:text-white hover:border-white transition-colors">
+                Ver Dicas no Instagram <Instagram size={18} />
+              </a>
+            </Reveal>
+          </div>
+          
+          <div className="md:w-1/2 grid grid-cols-2 gap-4">
+             <Reveal delay={200}>
+               <div className="bg-black/10 p-6 rounded-2xl backdrop-blur-sm hover:bg-black/20 transition-colors border border-black/5">
+                  <span className="text-4xl block mb-2">🍔</span>
+                  <p className="font-bold text-lg uppercase tracking-tight">Burgers & IPAs</p>
+                  <p className="text-sm opacity-75">O amargor corta a gordura e limpa o paladar.</p>
+               </div>
+             </Reveal>
+             <Reveal delay={300}>
+               <div className="bg-black/10 p-6 rounded-2xl backdrop-blur-sm hover:bg-black/20 transition-colors border border-black/5">
+                  <span className="text-4xl block mb-2">🥨</span>
+                  <p className="font-bold text-lg uppercase tracking-tight">Petiscos & Lager</p>
+                  <p className="text-sm opacity-75">Leveza e frescor para acompanhar frituras.</p>
+               </div>
+             </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* --- A FÁBRICA --- */}
-      <section id="afabrica" className="py-24 relative bg-black border-t border-white/10">
+      <section id="afabrica" className="py-24 relative bg-black">
         <div className="absolute inset-0 bg-[url('/images/hero-bg.jpg')] bg-cover bg-center bg-fixed opacity-20 grayscale"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
         
@@ -348,7 +481,7 @@ function App() {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-gradient-to-br from-gray-900/90 to-black/90 p-10 lg:p-12 border border-white/10 rounded-3xl relative overflow-hidden backdrop-blur-md">
+                    <div className="bg-gradient-to-br from-gray-900/90 to-black/90 p-10 lg:p-12 border border-white/10 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-beer-gold blur-[80px] opacity-20"></div>
                         <h4 className="text-2xl font-black text-white mb-8 uppercase">Visite-nos</h4>
                         <div className="space-y-8">
@@ -367,7 +500,7 @@ function App() {
                                 </div>
                             </div>
                         </div>
-                        <a href="https://wa.me/553125641240" target="_blank" className="mt-10 w-full bg-green-600 hover:bg-green-500 text-white font-black py-5 rounded-xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-sm shadow-xl">
+                        <a href="https://wa.me/553125641240" target="_blank" className="mt-10 w-full bg-green-600 hover:bg-green-500 text-white font-black py-5 rounded-xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-sm shadow-xl hover:-translate-y-1">
                             <ShoppingBag size={20} /> Orçamento Rápido
                         </a>
                     </div>
