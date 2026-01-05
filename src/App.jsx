@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Papa from 'papaparse'; // Leitor de CSV
+import Papa from 'papaparse'; 
 import { 
   MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, 
   ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, 
@@ -8,11 +8,10 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURAÇÃO DA PLANILHA ---
-// Passo 1: Crie a planilha no Google com colunas: dia, horario, titulo, descricao, categoria, destaque
-// Passo 2: Arquivo > Compartilhar > Publicar na Web > CSV > Copiar Link
+// Lembre-se: Arquivo > Compartilhar > Publicar na Web > CSV
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4dXo5Iu4D0vOcvkdUnIBmyqGqcaVdOJ5EDqHIgYfm0oSf_4ZinVhk7qllVwyPuFENL0MGv4yuBT9L/pub?output=csv"; 
 
-// --- COMPONENTE DE ANIMAÇÃO ---
+// --- COMPONENTE DE ANIMAÇÃO (REVEAL) ---
 const Reveal = ({ children, delay = 0 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
@@ -39,57 +38,65 @@ const Reveal = ({ children, delay = 0 }) => {
 };
 
 function App() {
+  // --- ESTADOS ---
+  const [loading, setLoading] = useState(true); // Preloader
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false); 
   
-  // Estado da Calculadora
+  // Calculadora
   const [showCalculator, setShowCalculator] = useState(false);
   const [calcGuests, setCalcGuests] = useState(20);
   const [calcHours, setCalcHours] = useState(4);
   const [calcResult, setCalcResult] = useState(0);
 
-  // Estado da Agenda (Google Sheets)
+  // Agenda (Google Sheets)
   const [agenda, setAgenda] = useState([]);
   const [loadingAgenda, setLoadingAgenda] = useState(true);
 
+  // --- EFEITOS ---
   useEffect(() => {
+    // 1. Preloader
+    const timer = setTimeout(() => setLoading(false), 2500);
+    
+    // 2. Scroll Navbar
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+    
+    // 3. Inicializa Calculadora
     calculateChopp(20, 4);
 
-    // --- BUSCAR DADOS DA PLANILHA ---
+    // 4. Busca Agenda
     const fetchAgenda = () => {
       if (SHEET_URL.includes("COLE_AQUI")) {
-        setLoadingAgenda(false); // Não tenta carregar se não tiver link
+        setLoadingAgenda(false);
         return;
       }
-
       Papa.parse(SHEET_URL, {
-        download: true,
+        download: true, 
         header: true,
-        complete: (results) => {
-          setAgenda(results.data);
-          setLoadingAgenda(false);
+        complete: (results) => { 
+            setAgenda(results.data); 
+            setLoadingAgenda(false); 
         },
-        error: (err) => {
-          console.error("Erro ao ler planilha:", err);
-          setLoadingAgenda(false);
+        error: (err) => { 
+            console.error("Erro planilha:", err); 
+            setLoadingAgenda(false); 
         }
       });
     };
-
     fetchAgenda();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
+    };
   }, []);
 
+  // --- FUNÇÕES ---
   const handleAgeConfirm = (isOver18) => {
-      if (isOver18) {
-          setAgeVerified(true);
-      } else {
-          window.location.href = "https://www.google.com";
-      }
+      if (isOver18) { setAgeVerified(true); } 
+      else { window.location.href = "https://www.google.com"; }
   };
 
   const calculateChopp = (guests, hours) => {
@@ -107,6 +114,7 @@ function App() {
     return <Calendar size={24} className="text-gray-600" />;
   };
 
+  // --- DADOS COMPLETOS DAS CERVEJAS (7 Itens) ---
   const beers = [
     { 
       id: "pilsen", name: "Hoog Pilsen", style: "Premium Lager", tagline: "Leveza e Equilíbrio",
@@ -166,83 +174,106 @@ function App() {
     }
   ];
 
+  // --- DADOS FAQ ---
+  const faqs = [
+    { p: "Entregam em quais bairros?", r: "Entregamos em toda a região de Contagem e alguns bairros de BH e Betim. Consulte a taxa de entrega pelo WhatsApp." },
+    { p: "A chopeira elétrica precisa de tomada 220v?", r: "Não! Nossas chopeiras são 110v ou 220v (bivolt). Levamos a extensão e instalamos tudo para você." },
+    { p: "Quanto tempo o chopp dura no barril?", r: "Após aberto e instalado na chopeira, recomendamos o consumo em até 24 horas para manter o frescor e o gás." },
+    { p: "Preciso comprar gelo?", r: "Para barris com chopeira elétrica, NÃO precisa de gelo. A máquina gela o chopp em 5 minutos. Apenas para a chopeira a gelo (naja) é necessário." },
+    { p: "Aceitam quais formas de pagamento?", r: "Aceitamos PIX, Cartão de Crédito e Débito no momento da entrega." }
+  ];
+
   return (
     <div className={`min-h-screen bg-beer-dark text-gray-100 font-sans selection:bg-beer-gold selection:text-black overflow-x-hidden ${!ageVerified ? 'h-screen overflow-hidden' : ''}`}>
       
-      {/* --- MODAL CALCULADORA --- */}
+      {/* --- 1. PRELOADER (TELA DE CARREGAMENTO) --- */}
+      {loading && (
+        <div className="fixed inset-0 z-[200] bg-black flex items-center justify-center preloader-exit pointer-events-none">
+           <div className="text-center">
+              <img src="/images/logo-oficial.png" alt="Loading" className="h-32 animate-pulse-gold mb-4" />
+              <div className="w-48 h-1 bg-gray-800 rounded-full mx-auto overflow-hidden">
+                 <div className="h-full bg-beer-gold animate-[width_2s_ease-out_forwards]" style={{width: '0%'}}></div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* --- 2. MODAL CALCULADORA --- */}
       {showCalculator && (
         <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-gray-900 border border-beer-gold/30 rounded-2xl p-8 max-w-md w-full relative">
             <button onClick={() => setShowCalculator(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X /></button>
-            
             <div className="text-center mb-8">
               <Calculator className="mx-auto text-beer-gold mb-3" size={40} />
               <h3 className="text-2xl font-black uppercase text-white">Calculadora de Chopp</h3>
               <p className="text-gray-400 text-sm">Planeje sua festa sem desperdício</p>
             </div>
-
             <div className="space-y-6">
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2">
-                  <Users size={16}/> Número de Convidados
-                </label>
-                <input 
-                  type="range" min="5" max="200" step="5" 
-                  value={calcGuests} 
-                  onChange={(e) => calculateChopp(parseInt(e.target.value), calcHours)}
-                  className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="text-right text-white font-bold mt-1">{calcGuests} Pessoas</div>
+                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2"><Users size={16}/> Número de Convidados: {calcGuests}</label>
+                <input type="range" min="5" max="200" step="5" value={calcGuests} onChange={(e) => calculateChopp(parseInt(e.target.value), calcHours)} className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg cursor-pointer"/>
               </div>
-
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2">
-                  <Clock size={16}/> Duração da Festa
-                </label>
-                <input 
-                  type="range" min="1" max="12" step="1" 
-                  value={calcHours} 
-                  onChange={(e) => calculateChopp(calcGuests, parseInt(e.target.value))}
-                  className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="text-right text-white font-bold mt-1">{calcHours} Horas</div>
+                <label className="flex items-center gap-2 text-sm font-bold uppercase text-beer-gold mb-2"><Clock size={16}/> Duração da Festa: {calcHours}h</label>
+                <input type="range" min="1" max="12" step="1" value={calcHours} onChange={(e) => calculateChopp(calcGuests, parseInt(e.target.value))} className="w-full accent-beer-gold h-2 bg-gray-700 rounded-lg cursor-pointer"/>
               </div>
-
               <div className="bg-white/10 p-4 rounded-xl text-center border border-white/10">
                 <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">Recomendação Aproximada</span>
                 <span className="text-4xl font-black text-beer-gold">{calcResult} Litros</span>
               </div>
-
-              <a 
-                href={`https://wa.me/553125641240?text=Olá! Fiz um cálculo no site. Preciso de aproximadamente ${calcResult} litros de chopp para ${calcGuests} pessoas.`} 
-                target="_blank"
-                className="block w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-center uppercase tracking-widest transition-colors"
-              >
-                Solicitar Orçamento
-              </a>
+              <a href={`https://wa.me/553125641240?text=Olá! Fiz um cálculo no site. Preciso de aproximadamente ${calcResult} litros de chopp para ${calcGuests} pessoas.`} target="_blank" className="block w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-center uppercase tracking-widest transition-colors">Solicitar Orçamento</a>
             </div>
           </div>
         </div>
       )}
 
-      {/* --- AGE GATE --- */}
+{/* --- AGE GATE (VERIFICAÇÃO DE IDADE) --- */}
       {!ageVerified && (
-        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center">
-            <div className="max-w-md w-full bg-gray-900 border border-beer-gold/30 p-8 rounded-2xl shadow-2xl relative overflow-hidden animate-fade-in-up">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-beer-gold to-transparent"></div>
-                <img src="/images/logo-oficial.png" alt="Hoog Bier" className="h-24 mx-auto mb-8 animate-pulse-slow" />
-                <h2 className="text-2xl font-bold text-white mb-2 uppercase tracking-wide">Bem-vindo</h2>
-                <p className="text-gray-400 mb-8 text-lg">Você tem 18 anos ou mais?</p>
-                <div className="flex flex-col gap-4">
-                    <button onClick={() => handleAgeConfirm(true)} className="w-full bg-beer-gold hover:bg-white text-black font-bold py-4 rounded-xl uppercase tracking-widest transition-all transform hover:-translate-y-1 shadow-lg">Sim, tenho +18</button>
-                    <button onClick={() => handleAgeConfirm(false)} className="w-full bg-transparent border border-gray-700 text-gray-500 hover:text-white hover:border-white font-bold py-4 rounded-xl uppercase tracking-widest transition-all">Não, sou menor</button>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+            
+            {/* Fundo Escuro com Blur */}
+            <div className="absolute inset-0 bg-black/15 backdrop-blur-xl"></div>
+
+            {/* O Card Central */}
+            <div className="relative z-10 w-full max-w-md bg-zinc-900 border border-beer-gold/30 p-8 rounded-3xl shadow-[0_0_50px_rgba(245,158,11,0.2)] text-center animate-fade-in-up">
+                
+                {/* Logo */}
+                <div className="mb-8 flex justify-center">
+                   <img src="/images/logo-oficial.png" alt="Hoog Bier" className="h-28 w-auto object-contain drop-shadow-lg" />
                 </div>
-                <p className="text-[10px] text-gray-600 mt-8 uppercase tracking-widest font-bold">Beba com moderação. Se beber, não dirija.</p>
+
+                <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">
+                  Seja Bem-vindo
+                </h2>
+                
+                <p className="text-gray-400 mb-8 font-medium leading-relaxed">
+                  Para acessar o site da Hoog Bier, você precisa ter idade legal para consumo de álcool.
+                </p>
+
+                <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={() => handleAgeConfirm(true)} 
+                      className="w-full bg-beer-gold hover:bg-white text-black font-black text-lg py-4 rounded-xl uppercase tracking-widest transition-all transform active:scale-95 shadow-lg"
+                    >
+                      Sim, tenho +18
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleAgeConfirm(false)} 
+                      className="w-full bg-transparent border-2 border-white/10 text-gray-500 hover:text-white hover:border-white font-bold py-4 rounded-xl uppercase tracking-widest transition-all"
+                    >
+                      Não, sou menor
+                    </button>
+                </div>
+
+                <p className="text-[10px] text-gray-600 mt-6 uppercase font-bold tracking-[0.2em] opacity-50">
+                  Beba com moderação.
+                </p>
             </div>
         </div>
       )}
-
-      {/* WhatsApp Flutuante */}
+      
+      {/* --- 4. WHATSAPP FLUTUANTE --- */}
       <a href="https://wa.me/553125641240" target="_blank" className="fixed bottom-6 right-6 z-[60] group">
         <span className="absolute inset-0 rounded-full bg-green-500 opacity-70 animate-ping"></span>
         <div className="relative bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-transform transform group-hover:scale-110 flex items-center justify-center">
@@ -250,7 +281,7 @@ function App() {
         </div>
       </a>
 
-      {/* NAVBAR */}
+      {/* --- 5. NAVBAR --- */}
       <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-beer-dark/90 backdrop-blur-xl border-b border-white/5 py-3' : 'bg-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -266,12 +297,9 @@ function App() {
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-beer-gold transition-all duration-300 group-hover:w-full"></span>
                     </a>
                 ))}
-                
-                {/* Botão Calculadora Navbar */}
                 <button onClick={() => setShowCalculator(true)} className="text-sm font-bold uppercase tracking-widest text-beer-gold hover:text-white transition-colors flex items-center gap-1">
                   <Calculator size={16}/> Calc. Chopp
                 </button>
-
                 <a href="https://wa.me/553125641240" target="_blank" className="bg-gradient-to-r from-beer-gold to-yellow-400 hover:to-yellow-300 text-black px-8 py-3 rounded-full text-xs font-black transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] flex items-center gap-2 uppercase tracking-wider hover:-translate-y-1">
                   <Truck size={16} /> Pedir Agora
                 </a>
@@ -296,7 +324,7 @@ function App() {
         )}
       </nav>
 
-      {/* --- HERO SECTION --- */}
+      {/* --- 6. HERO SECTION --- */}
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-[url('/images/hero-bg.jpg')] bg-cover bg-center bg-fixed opacity-100 scale-105"></div>
@@ -333,17 +361,14 @@ function App() {
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
                     <ShoppingBag size={20} /> Fazer Pedido
                 </a>
-                <button onClick={() => setShowCalculator(true)} className="border border-white/20 hover:border-white/50 text-white font-bold py-5 px-10 rounded-xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-widest bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:text-beer-gold">
-                    <Calculator size={20} /> Calcular Festa
-                </button>
             </div>
           </Reveal>
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/30 animate-bounce"><ChevronDown size={32} /></div>
         </div>
       </section>
 
-      {/* --- DIFERENCIAIS --- */}
-      <section className="py-24 bg-beer-dark border-b border-white/5 bg-noise">
+      {/* --- 7. DIFERENCIAIS --- */}
+      <section className="py-24 bg-beer-dark border-b border-white/5 bg-noise relative z-20">
         <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
@@ -365,8 +390,8 @@ function App() {
         </div>
       </section>
 
-      {/* --- CATÁLOGO --- */}
-      <section id="cervejas" className="py-32 bg-beer-dark relative overflow-hidden bg-noise">
+      {/* --- 8. CATÁLOGO (COM DIVISOR DE ONDA EMBAIXO) --- */}
+      <section id="cervejas" className="py-32 bg-beer-dark relative overflow-hidden bg-noise pb-48">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal>
             <div className="text-center mb-24">
@@ -379,7 +404,7 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-24"> 
             {beers.map((beer, index) => (
               <Reveal key={beer.id} delay={index * 100}>
-                <div className="group relative bg-white/5 border border-white/10 rounded-[2rem] p-6 pt-0 hover:border-beer-gold/50 transition-all duration-500 hover:bg-white/10 flex flex-col h-full hover:shadow-[0_0_50px_-10px_rgba(245,158,11,0.2)]">
+                <div className="group relative bg-white/5 border border-white/10 rounded-[2rem] p-6 pt-0 hover:border-beer-gold/50 transition-all duration-500 hover:bg-white/10 flex flex-col h-full hover:shadow-[0_0_50px_-10px_rgba(245,158,11,0.2)] hover:-translate-y-2">
                     
                     {/* Imagem Flutuante */}
                     <div className="relative -mt-20 mb-6 flex justify-center perspective-1000">
@@ -387,7 +412,7 @@ function App() {
                         <img 
                             src={beer.image} 
                             alt={beer.name} 
-                            className="h-64 w-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 z-10"
+                            className="h-64 w-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] transform group-hover:scale-110 transition-all duration-500 z-10"
                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                         />
                         <div className="hidden h-64 w-48 bg-gray-800/80 rounded-2xl flex-col items-center justify-center text-center border border-gray-700 z-10">
@@ -452,15 +477,22 @@ function App() {
             ))}
           </div>
         </div>
+
+        {/* DIVISOR ONDA (Bottom) */}
+        <div className="custom-shape-divider-bottom-1">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
+            </svg>
+        </div>
       </section>
 
-      {/* --- EXPERIÊNCIA GASTRONÔMICA --- */}
+      {/* --- 9. EXPERIÊNCIA GASTRONÔMICA --- */}
       <section className="py-20 bg-beer-gold text-beer-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
            <Beer size={400} className="absolute -right-20 -bottom-20 rotate-12" />
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center gap-12 pt-10">
           <div className="md:w-1/2">
             <Reveal>
               <h3 className="text-4xl md:text-5xl font-display font-black uppercase leading-tight mb-4">
@@ -494,11 +526,19 @@ function App() {
         </div>
       </section>
 
-       {/* --- AGENDA DA SEMANA (VIA GOOGLE SHEETS) --- */}
-       <section className="py-24 bg-zinc-900 border-t border-white/5 relative overflow-hidden">
+      {/* --- 10. AGENDA (COM DIVISOR ONDA NO TOPO) --- */}
+      <section className="py-32 bg-zinc-900 relative overflow-hidden">
+        
+        {/* DIVISOR ONDA (Top) */}
+        <div className="custom-shape-divider-top-1">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
+            </svg>
+        </div>
+
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
         
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 relative z-10 pt-10">
           <Reveal>
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
               <div>
@@ -515,25 +555,17 @@ function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* CARREGANDO... */}
+            {/* Loading */}
             {loadingAgenda && (
               <div className="col-span-3 text-center py-12">
                  <div className="animate-spin inline-block w-8 h-8 border-4 border-beer-gold border-t-transparent rounded-full mb-4"></div>
                  <p className="text-gray-400">Carregando programação...</p>
-                 {SHEET_URL.includes("COLE_AQUI") && <p className="text-red-400 text-xs mt-2">Lembre-se de colocar o Link CSV no código!</p>}
+                 {SHEET_URL.includes("COLE_AQUI") && <p className="text-red-400 text-xs mt-2">Você precisa colocar o Link CSV no código!</p>}
               </div>
             )}
 
-            {/* SEM EVENTOS */}
-            {!loadingAgenda && agenda.length === 0 && (
-              <div className="col-span-3 text-center py-12 border border-white/5 rounded-3xl bg-white/5">
-                 <p className="text-gray-400">Nenhum evento programado para esta semana.</p>
-                 <p className="text-beer-gold text-sm mt-2 font-bold">Acompanhe no Instagram!</p>
-              </div>
-            )}
-
-            {/* LISTA DE EVENTOS DO CSV */}
-            {agenda.map((evento, index) => {
+            {/* Lista Agenda */}
+            {!loadingAgenda && agenda.map((evento, index) => {
               if(!evento.titulo) return null;
               const isDestaque = evento.destaque && evento.destaque.toLowerCase().includes('sim');
               
@@ -564,6 +596,12 @@ function App() {
                     
                     <h4 className="text-2xl font-bold text-white mb-2 leading-tight">{evento.titulo}</h4>
                     <p className="text-gray-400 text-sm mb-4 flex-1">{evento.descricao}</p>
+                    
+                    {isDestaque && (
+                        <div className="flex items-center gap-2 text-xs font-bold text-beer-gold uppercase tracking-wider mt-auto pt-4 border-t border-white/10">
+                            <span className="w-2 h-2 rounded-full bg-beer-gold animate-ping"></span> Imperdível
+                        </div>
+                    )}
                   </div>
                 </Reveal>
               );
@@ -572,7 +610,43 @@ function App() {
         </div>
       </section>
 
-      {/* --- A FÁBRICA --- */}
+      {/* --- 11. FAQ (PERGUNTAS) --- */}
+      <section className="py-24 bg-beer-dark relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-beer-gold font-bold tracking-widest uppercase text-xs mb-4 block">Tira-Dúvidas</span>
+              <h3 className="text-4xl font-black text-white uppercase tracking-tighter">
+                Perguntas <span className="text-beer-gold">Frequentes</span>
+              </h3>
+            </div>
+          </Reveal>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <Reveal key={index} delay={index * 100}>
+                <details className="group bg-white/5 border border-white/10 rounded-2xl overflow-hidden cursor-pointer hover:border-beer-gold/30 transition-all">
+                  <summary className="flex justify-between items-center p-6 font-bold text-white uppercase tracking-wide select-none">
+                    <span className="flex items-center gap-3">
+                      <HelpCircle className="text-beer-gold" size={20} />
+                      {faq.p}
+                    </span>
+                    <span className="bg-white/10 p-1 rounded-full group-open:bg-beer-gold group-open:text-black transition-colors">
+                      <Plus size={16} className="group-open:hidden" />
+                      <Minus size={16} className="hidden group-open:block" />
+                    </span>
+                  </summary>
+                  <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4 bg-black/20">
+                    {faq.r}
+                  </div>
+                </details>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --- 12. A FÁBRICA --- */}
       <section id="afabrica" className="py-24 relative bg-black">
         <div className="absolute inset-0 bg-[url('/images/hero-bg.jpg')] bg-cover bg-center bg-fixed opacity-20 grayscale"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
@@ -624,64 +698,7 @@ function App() {
         </div>
       </section>
 
-      {/* --- FAQ (PERGUNTAS FREQUENTES) --- */}
-      <section className="py-24 bg-beer-dark relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <Reveal>
-            <div className="text-center mb-16">
-              <span className="text-beer-gold font-bold tracking-widest uppercase text-xs mb-4 block">Tira-Dúvidas</span>
-              <h3 className="text-4xl font-black text-white uppercase tracking-tighter">
-                Perguntas <span className="text-beer-gold">Frequentes</span>
-              </h3>
-            </div>
-          </Reveal>
-
-          <div className="space-y-4">
-            {[
-              { 
-                pergunta: "Vocês entregam em quais bairros?", 
-                resposta: "Entregamos em toda a região de Contagem e alguns bairros de BH e Betim. Consulte a taxa de entrega pelo WhatsApp." 
-              },
-              { 
-                pergunta: "A chopeira elétrica precisa de tomada 220v?", 
-                resposta: "Não! Nossas chopeiras são 110v ou 220v (bivolt). Levamos a extensão e instalamos tudo para você." 
-              },
-              { 
-                pergunta: "Quanto tempo o chopp dura no barril?", 
-                resposta: "Após aberto e instalado na chopeira, recomendamos o consumo em até 24 horas para manter o frescor e o gás." 
-              },
-              { 
-                pergunta: "Preciso comprar gelo?", 
-                resposta: "Para barris com chopeira elétrica, NÃO precisa de gelo. A máquina gela o chopp em 5 minutos. Apenas para a chopeira a gelo (naja) é necessário." 
-              },
-              { 
-                pergunta: "Aceitam quais formas de pagamento?", 
-                resposta: "Aceitamos PIX, Cartão de Crédito e Débito no momento da entrega." 
-              }
-            ].map((faq, index) => (
-              <Reveal key={index} delay={index * 100}>
-                <details className="group bg-white/5 border border-white/10 rounded-2xl overflow-hidden cursor-pointer hover:border-beer-gold/30 transition-all">
-                  <summary className="flex justify-between items-center p-6 font-bold text-white uppercase tracking-wide select-none">
-                    <span className="flex items-center gap-3">
-                      <HelpCircle className="text-beer-gold" size={20} />
-                      {faq.pergunta}
-                    </span>
-                    <span className="bg-white/10 p-1 rounded-full group-open:bg-beer-gold group-open:text-black transition-colors">
-                      <Plus size={16} className="group-open:hidden" />
-                      <Minus size={16} className="hidden group-open:block" />
-                    </span>
-                  </summary>
-                  <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4 bg-black/20">
-                    {faq.resposta}
-                  </div>
-                </details>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- CLUBE VIP (NEWSLETTER) --- */}
+      {/* --- 13. CLUBE VIP (NEWSLETTER) --- */}
       <section className="py-20 bg-gradient-to-r from-beer-gold to-yellow-500 text-black">
          <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex-1">
@@ -698,7 +715,7 @@ function App() {
          </div>
       </section>
 
-      {/* --- RODAPÉ CLÁSSICO --- */}
+      {/* --- 14. RODAPÉ --- */}
       <footer className="bg-black py-12 border-t border-gray-900 text-center">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center">
             <img src="/images/logo-oficial.png" alt="Hoog Bier" className="h-24 w-auto mb-8 opacity-90" />

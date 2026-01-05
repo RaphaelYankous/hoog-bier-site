@@ -6,23 +6,18 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px; /* Garante que o menu não tape o título */
+  scroll-padding-top: 100px;
 }
 
-/* Animação de Flutuação Suave para as Garrafas */
+/* --- ANIMAÇÕES GERAIS --- */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
 }
+.animate-float { animation: float 6s ease-in-out infinite; }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Textura de Grão (Noise) */
-.bg-noise {
-  position: relative;
-}
+/* --- TEXTURA NOISE --- */
+.bg-noise { position: relative; }
 .bg-noise::before {
   content: "";
   position: absolute;
@@ -33,14 +28,71 @@ html {
   opacity: 0.4;
 }
 
-/* Classes utilitárias para o Reveal on Scroll */
+/* --- REVEAL ON SCROLL --- */
 .reveal {
   opacity: 0;
   transform: translateY(30px);
   transition: all 1s cubic-bezier(0.5, 0, 0, 1);
 }
-
 .reveal.active {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* --- PRELOADER --- */
+.preloader-exit {
+  animation: slideUp 0.8s ease-in-out forwards;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(245, 158, 11, 0)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5)); transform: scale(1.05); }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* --- DIVISORES DE ONDA (SHAPE DIVIDERS) --- */
+.custom-shape-divider-bottom-1 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+.custom-shape-divider-bottom-1 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 100px; /* Altura da onda */
+}
+.custom-shape-divider-bottom-1 .shape-fill {
+    fill: #F59E0B; /* Cor beer-gold */
+}
+
+/* Onda Invertida (Topo) */
+.custom-shape-divider-top-1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+.custom-shape-divider-top-1 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 100px;
+}
+.custom-shape-divider-top-1 .shape-fill {
+    fill: #F59E0B; /* Cor beer-gold */
 }
