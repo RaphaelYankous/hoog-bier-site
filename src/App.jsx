@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Papa from 'papaparse'; // Importe o leitor de CSV
+import Papa from 'papaparse'; // Leitor de CSV
 import { 
   MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, 
   ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, 
-  MessageCircle, ChevronDown, Utensils, Calculator, Users, Music, Calendar 
+  MessageCircle, ChevronDown, Utensils, Calculator, Users, Music, Calendar,
+  HelpCircle, Plus, Minus, Mail
 } from 'lucide-react';
 
-// --- LINK DA SUA PLANILHA GOOGLE (LINK CSV) ---
-// Substitua pelo seu link gerado em: Arquivo > Compartilhar > Publicar na Web > CSV
+// --- CONFIGURAÇÃO DA PLANILHA ---
+// Passo 1: Crie a planilha no Google com colunas: dia, horario, titulo, descricao, categoria, destaque
+// Passo 2: Arquivo > Compartilhar > Publicar na Web > CSV > Copiar Link
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4dXo5Iu4D0vOcvkdUnIBmyqGqcaVdOJ5EDqHIgYfm0oSf_4ZinVhk7qllVwyPuFENL0MGv4yuBT9L/pub?output=csv"; 
 
 // --- COMPONENTE DE ANIMAÇÃO ---
@@ -47,7 +49,7 @@ function App() {
   const [calcHours, setCalcHours] = useState(4);
   const [calcResult, setCalcResult] = useState(0);
 
-  // ESTADO DA AGENDA (GOOGLE SHEETS)
+  // Estado da Agenda (Google Sheets)
   const [agenda, setAgenda] = useState([]);
   const [loadingAgenda, setLoadingAgenda] = useState(true);
 
@@ -58,9 +60,8 @@ function App() {
 
     // --- BUSCAR DADOS DA PLANILHA ---
     const fetchAgenda = () => {
-      // Se você ainda não colocou o link, usa dados falsos para não quebrar
       if (SHEET_URL.includes("COLE_AQUI")) {
-        setLoadingAgenda(false);
+        setLoadingAgenda(false); // Não tenta carregar se não tiver link
         return;
       }
 
@@ -99,7 +100,6 @@ function App() {
   };
 
   const getEventIcon = (categoria) => {
-    // Normaliza para minusculo e remove espaços para evitar erros de digitação na planilha
     const cat = categoria ? categoria.toLowerCase().trim() : '';
     if(cat.includes('musica')) return <Music size={24} className="text-gray-600 group-hover:text-beer-gold transition-colors" />;
     if(cat.includes('comida')) return <Truck size={24} className="text-gray-600 group-hover:text-beer-gold transition-colors" />;
@@ -267,6 +267,7 @@ function App() {
                     </a>
                 ))}
                 
+                {/* Botão Calculadora Navbar */}
                 <button onClick={() => setShowCalculator(true)} className="text-sm font-bold uppercase tracking-widest text-beer-gold hover:text-white transition-colors flex items-center gap-1">
                   <Calculator size={16}/> Calc. Chopp
                 </button>
@@ -453,7 +454,7 @@ function App() {
         </div>
       </section>
 
-      {/* --- NOVA SEÇÃO: EXPERIÊNCIA GASTRONÔMICA --- */}
+      {/* --- EXPERIÊNCIA GASTRONÔMICA --- */}
       <section className="py-20 bg-beer-gold text-beer-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
            <Beer size={400} className="absolute -right-20 -bottom-20 rotate-12" />
@@ -507,7 +508,7 @@ function App() {
                 </h3>
               </div>
               <a href="https://wa.me/553125641240" target="_blank" className="bg-white/5 hover:bg-beer-gold hover:text-black border border-white/10 text-white px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest transition-all flex items-center gap-2">
-                 <Calendar size={16} /> Sobre o evento
+                 <Calendar size={16} /> Reservar Mesa
               </a>
             </div>
           </Reveal>
@@ -519,11 +520,11 @@ function App() {
               <div className="col-span-3 text-center py-12">
                  <div className="animate-spin inline-block w-8 h-8 border-4 border-beer-gold border-t-transparent rounded-full mb-4"></div>
                  <p className="text-gray-400">Carregando programação...</p>
-                 {SHEET_URL.includes("COLE_AQUI") && <p className="text-red-400 text-xs mt-2">Você precisa colocar o Link CSV no código!</p>}
+                 {SHEET_URL.includes("COLE_AQUI") && <p className="text-red-400 text-xs mt-2">Lembre-se de colocar o Link CSV no código!</p>}
               </div>
             )}
 
-            {/* SEM EVENTOS (OU FALHA) */}
+            {/* SEM EVENTOS */}
             {!loadingAgenda && agenda.length === 0 && (
               <div className="col-span-3 text-center py-12 border border-white/5 rounded-3xl bg-white/5">
                  <p className="text-gray-400">Nenhum evento programado para esta semana.</p>
@@ -533,7 +534,7 @@ function App() {
 
             {/* LISTA DE EVENTOS DO CSV */}
             {agenda.map((evento, index) => {
-              if(!evento.titulo) return null; // Pula linhas vazias
+              if(!evento.titulo) return null;
               const isDestaque = evento.destaque && evento.destaque.toLowerCase().includes('sim');
               
               return (
@@ -556,8 +557,6 @@ function App() {
                       }`}>
                         {evento.dia} <br/> <span className="text-sm font-medium">{evento.horario}</span>
                       </div>
-                      
-                      {/* Ícone Dinâmico */}
                       <div className="bg-white/5 p-3 rounded-full">
                         {getEventIcon(evento.categoria)}
                       </div>
@@ -565,17 +564,10 @@ function App() {
                     
                     <h4 className="text-2xl font-bold text-white mb-2 leading-tight">{evento.titulo}</h4>
                     <p className="text-gray-400 text-sm mb-4 flex-1">{evento.descricao}</p>
-                    
-                    {isDestaque && (
-                        <div className="flex items-center gap-2 text-xs font-bold text-beer-gold uppercase tracking-wider mt-auto pt-4 border-t border-white/10">
-                            <span className="w-2 h-2 rounded-full bg-beer-gold animate-ping"></span> Imperdível
-                        </div>
-                    )}
                   </div>
                 </Reveal>
               );
             })}
-
           </div>
         </div>
       </section>
@@ -630,6 +622,80 @@ function App() {
                 </div>
             </Reveal>
         </div>
+      </section>
+
+      {/* --- FAQ (PERGUNTAS FREQUENTES) --- */}
+      <section className="py-24 bg-beer-dark relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-beer-gold font-bold tracking-widest uppercase text-xs mb-4 block">Tira-Dúvidas</span>
+              <h3 className="text-4xl font-black text-white uppercase tracking-tighter">
+                Perguntas <span className="text-beer-gold">Frequentes</span>
+              </h3>
+            </div>
+          </Reveal>
+
+          <div className="space-y-4">
+            {[
+              { 
+                pergunta: "Vocês entregam em quais bairros?", 
+                resposta: "Entregamos em toda a região de Contagem e alguns bairros de BH e Betim. Consulte a taxa de entrega pelo WhatsApp." 
+              },
+              { 
+                pergunta: "A chopeira elétrica precisa de tomada 220v?", 
+                resposta: "Não! Nossas chopeiras são 110v ou 220v (bivolt). Levamos a extensão e instalamos tudo para você." 
+              },
+              { 
+                pergunta: "Quanto tempo o chopp dura no barril?", 
+                resposta: "Após aberto e instalado na chopeira, recomendamos o consumo em até 24 horas para manter o frescor e o gás." 
+              },
+              { 
+                pergunta: "Preciso comprar gelo?", 
+                resposta: "Para barris com chopeira elétrica, NÃO precisa de gelo. A máquina gela o chopp em 5 minutos. Apenas para a chopeira a gelo (naja) é necessário." 
+              },
+              { 
+                pergunta: "Aceitam quais formas de pagamento?", 
+                resposta: "Aceitamos PIX, Cartão de Crédito e Débito no momento da entrega." 
+              }
+            ].map((faq, index) => (
+              <Reveal key={index} delay={index * 100}>
+                <details className="group bg-white/5 border border-white/10 rounded-2xl overflow-hidden cursor-pointer hover:border-beer-gold/30 transition-all">
+                  <summary className="flex justify-between items-center p-6 font-bold text-white uppercase tracking-wide select-none">
+                    <span className="flex items-center gap-3">
+                      <HelpCircle className="text-beer-gold" size={20} />
+                      {faq.pergunta}
+                    </span>
+                    <span className="bg-white/10 p-1 rounded-full group-open:bg-beer-gold group-open:text-black transition-colors">
+                      <Plus size={16} className="group-open:hidden" />
+                      <Minus size={16} className="hidden group-open:block" />
+                    </span>
+                  </summary>
+                  <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4 bg-black/20">
+                    {faq.resposta}
+                  </div>
+                </details>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --- CLUBE VIP (NEWSLETTER) --- */}
+      <section className="py-20 bg-gradient-to-r from-beer-gold to-yellow-500 text-black">
+         <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1">
+               <h3 className="text-3xl font-black uppercase tracking-tighter mb-2 flex items-center gap-2">
+                 <Mail className="border-2 border-black rounded-full p-1" size={32} /> Clube Hoog VIP
+               </h3>
+               <p className="font-medium text-black/80">
+                 Entre para nossa lista exclusiva no WhatsApp e receba promoções relâmpago, convites para eventos e lançamentos antes de todo mundo.
+               </p>
+            </div>
+            <a href="https://wa.me/553125641240?text=Quero%20entrar%20para%20o%20Clube%20VIP" target="_blank" className="bg-black text-beer-gold hover:text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2">
+               Quero Entrar Grátis <ArrowRight size={18} />
+            </a>
+         </div>
       </section>
 
       {/* --- RODAPÉ CLÁSSICO --- */}
