@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Papa from 'papaparse'; // Importe o leitor de CSV
 import { 
   MapPin, Instagram, Facebook, Phone, Beer, Truck, Menu, X, 
   ShoppingBag, Store, Star, Clock, CheckCircle, Package, ArrowRight, 
-  MessageCircle, ChevronDown, Utensils, Calculator, Users, PartyPopper 
+  MessageCircle, ChevronDown, Utensils, Calculator, Users, Music, Calendar 
 } from 'lucide-react';
 
-// --- COMPONENTE DE ANIMAÇÃO (REVEAL ON SCROLL) ---
+// --- LINK DA SUA PLANILHA GOOGLE (LINK CSV) ---
+// Substitua pelo seu link gerado em: Arquivo > Compartilhar > Publicar na Web > CSV
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4dXo5Iu4D0vOcvkdUnIBmyqGqcaVdOJ5EDqHIgYfm0oSf_4ZinVhk7qllVwyPuFENL0MGv4yuBT9L/pub?output=csv"; 
+
+// --- COMPONENTE DE ANIMAÇÃO ---
 const Reveal = ({ children, delay = 0 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
@@ -42,12 +47,38 @@ function App() {
   const [calcHours, setCalcHours] = useState(4);
   const [calcResult, setCalcResult] = useState(0);
 
+  // ESTADO DA AGENDA (GOOGLE SHEETS)
+  const [agenda, setAgenda] = useState([]);
+  const [loadingAgenda, setLoadingAgenda] = useState(true);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
-    
-    // Cálculo inicial
     calculateChopp(20, 4);
+
+    // --- BUSCAR DADOS DA PLANILHA ---
+    const fetchAgenda = () => {
+      // Se você ainda não colocou o link, usa dados falsos para não quebrar
+      if (SHEET_URL.includes("COLE_AQUI")) {
+        setLoadingAgenda(false);
+        return;
+      }
+
+      Papa.parse(SHEET_URL, {
+        download: true,
+        header: true,
+        complete: (results) => {
+          setAgenda(results.data);
+          setLoadingAgenda(false);
+        },
+        error: (err) => {
+          console.error("Erro ao ler planilha:", err);
+          setLoadingAgenda(false);
+        }
+      });
+    };
+
+    fetchAgenda();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -61,12 +92,19 @@ function App() {
   };
 
   const calculateChopp = (guests, hours) => {
-      // Média: 1.5L a 2L por pessoa em 4 horas. Vamos usar 0.5L por hora por pessoa (bebedor)
-      // Considerando que nem todos bebem, aplicamos um fator de 70% de bebedores ativos se for numero total
       const liters = Math.ceil((guests * 0.7) * (hours * 0.4)); 
-      setCalcResult(liters < 10 ? 10 : liters); // Mínimo 10L
+      setCalcResult(liters < 10 ? 10 : liters); 
       setCalcGuests(guests);
       setCalcHours(hours);
+  };
+
+  const getEventIcon = (categoria) => {
+    // Normaliza para minusculo e remove espaços para evitar erros de digitação na planilha
+    const cat = categoria ? categoria.toLowerCase().trim() : '';
+    if(cat.includes('musica')) return <Music size={24} className="text-gray-600 group-hover:text-beer-gold transition-colors" />;
+    if(cat.includes('comida')) return <Truck size={24} className="text-gray-600 group-hover:text-beer-gold transition-colors" />;
+    if(cat.includes('promocao')) return <Beer size={24} className="text-white" />;
+    return <Calendar size={24} className="text-gray-600" />;
   };
 
   const beers = [
@@ -229,7 +267,6 @@ function App() {
                     </a>
                 ))}
                 
-                {/* Botão Calculadora Navbar */}
                 <button onClick={() => setShowCalculator(true)} className="text-sm font-bold uppercase tracking-widest text-beer-gold hover:text-white transition-colors flex items-center gap-1">
                   <Calculator size={16}/> Calc. Chopp
                 </button>
@@ -373,7 +410,7 @@ function App() {
                             {beer.desc}
                         </p>
 
-                        {/* HARMONIZAÇÃO (NOVO) */}
+                        {/* HARMONIZAÇÃO */}
                         <div className="bg-black/40 rounded-lg p-3 mb-4 text-xs text-gray-400 flex flex-col items-center gap-2 border border-white/5">
                           <div className="flex items-center gap-1 font-bold uppercase text-beer-gold tracking-wider">
                              <Utensils size={12} /> Combina com:
@@ -416,9 +453,8 @@ function App() {
         </div>
       </section>
 
-      {/* --- NOVA SEÇÃO: EXPERIÊNCIA GASTRONÔMICA (QUEBRA VISUAL) --- */}
+      {/* --- NOVA SEÇÃO: EXPERIÊNCIA GASTRONÔMICA --- */}
       <section className="py-20 bg-beer-gold text-beer-dark relative overflow-hidden">
-        {/* Elemento decorativo de fundo */}
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
            <Beer size={400} className="absolute -right-20 -bottom-20 rotate-12" />
         </div>
@@ -453,6 +489,93 @@ function App() {
                   <p className="text-sm opacity-75">Leveza e frescor para acompanhar frituras.</p>
                </div>
              </Reveal>
+          </div>
+        </div>
+      </section>
+
+       {/* --- AGENDA DA SEMANA (VIA GOOGLE SHEETS) --- */}
+       <section className="py-24 bg-zinc-900 border-t border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <Reveal>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+              <div>
+                <span className="text-beer-gold font-bold tracking-widest uppercase text-xs mb-4 block">Happy Hour & Eventos</span>
+                <h3 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
+                  Agenda <span className="text-transparent bg-clip-text bg-gradient-to-r from-beer-gold to-yellow-200">Hoog</span>
+                </h3>
+              </div>
+              <a href="https://wa.me/553125641240" target="_blank" className="bg-white/5 hover:bg-beer-gold hover:text-black border border-white/10 text-white px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest transition-all flex items-center gap-2">
+                 <Calendar size={16} /> Sobre o evento
+              </a>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* CARREGANDO... */}
+            {loadingAgenda && (
+              <div className="col-span-3 text-center py-12">
+                 <div className="animate-spin inline-block w-8 h-8 border-4 border-beer-gold border-t-transparent rounded-full mb-4"></div>
+                 <p className="text-gray-400">Carregando programação...</p>
+                 {SHEET_URL.includes("COLE_AQUI") && <p className="text-red-400 text-xs mt-2">Você precisa colocar o Link CSV no código!</p>}
+              </div>
+            )}
+
+            {/* SEM EVENTOS (OU FALHA) */}
+            {!loadingAgenda && agenda.length === 0 && (
+              <div className="col-span-3 text-center py-12 border border-white/5 rounded-3xl bg-white/5">
+                 <p className="text-gray-400">Nenhum evento programado para esta semana.</p>
+                 <p className="text-beer-gold text-sm mt-2 font-bold">Acompanhe no Instagram!</p>
+              </div>
+            )}
+
+            {/* LISTA DE EVENTOS DO CSV */}
+            {agenda.map((evento, index) => {
+              if(!evento.titulo) return null; // Pula linhas vazias
+              const isDestaque = evento.destaque && evento.destaque.toLowerCase().includes('sim');
+              
+              return (
+                <Reveal key={index} delay={index * 100}>
+                   <div className={`h-full border p-8 rounded-3xl transition-all group hover:-translate-y-2 relative overflow-hidden flex flex-col ${
+                      isDestaque 
+                      ? 'bg-gradient-to-br from-beer-gold/20 to-black/40 border-beer-gold/30 hover:border-beer-gold' 
+                      : 'bg-black/40 border-white/10 hover:border-beer-gold/50'
+                    }`}>
+                    
+                    {isDestaque && (
+                       <div className="absolute top-0 right-0 bg-beer-gold text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase z-20">Destaque</div>
+                    )}
+
+                    <div className="flex justify-between items-start mb-6">
+                      <div className={`px-4 py-2 rounded-lg font-black text-xl text-center border transition-colors ${
+                          isDestaque
+                          ? 'bg-beer-gold text-black border-beer-gold'
+                          : 'bg-beer-gold/10 text-beer-gold border-beer-gold/20 group-hover:bg-beer-gold group-hover:text-black'
+                      }`}>
+                        {evento.dia} <br/> <span className="text-sm font-medium">{evento.horario}</span>
+                      </div>
+                      
+                      {/* Ícone Dinâmico */}
+                      <div className="bg-white/5 p-3 rounded-full">
+                        {getEventIcon(evento.categoria)}
+                      </div>
+                    </div>
+                    
+                    <h4 className="text-2xl font-bold text-white mb-2 leading-tight">{evento.titulo}</h4>
+                    <p className="text-gray-400 text-sm mb-4 flex-1">{evento.descricao}</p>
+                    
+                    {isDestaque && (
+                        <div className="flex items-center gap-2 text-xs font-bold text-beer-gold uppercase tracking-wider mt-auto pt-4 border-t border-white/10">
+                            <span className="w-2 h-2 rounded-full bg-beer-gold animate-ping"></span> Imperdível
+                        </div>
+                    )}
+                  </div>
+                </Reveal>
+              );
+            })}
+
           </div>
         </div>
       </section>
