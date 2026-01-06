@@ -10,15 +10,17 @@ export default {
         'beer-gold': '#F59E0B',
         'beer-dark': '#111827',
       },
-      fontFamily: {
-        // Oswald para títulos (visual industrial/cervejaria)
-        sans: ['Montserrat', 'sans-serif'], 
-        display: ['Oswald', 'sans-serif'], 
-      },
+      // --- ADICIONE DAQUI PARA BAIXO ---
       animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'marquee': 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
       }
+      // --- ATÉ AQUI ---
     },
   },
   plugins: [],

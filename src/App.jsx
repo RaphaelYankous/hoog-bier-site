@@ -189,7 +189,7 @@ function App() {
 
       {/* 2. AGE GATE */}
       {!ageVerified && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-black/95 backdrop-blur-xl">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-black/9 backdrop-blur-xl">
             <div className="relative z-10 w-full max-w-md bg-zinc-900 border border-beer-gold/30 p-8 rounded-3xl text-center shadow-2xl animate-fade-in-up">
                 <img src="/images/logo-oficial.png" alt="Hoog" className="h-24 mx-auto mb-6" />
                 <h2 className="text-2xl font-black text-white mb-2 uppercase">Bem-vindo</h2>
@@ -303,13 +303,21 @@ function App() {
         </div>
       </section>
 
-      {/* --- TAP LIST --- */}
-      <div className="bg-beer-gold text-black py-3 overflow-hidden whitespace-nowrap border-y-4 border-black relative z-20">
-         <div className="inline-block animate-[marquee_20s_linear_infinite] font-black uppercase text-sm tracking-widest">
-            🍺 HOJE NAS TORNEIRAS: PILSEN • IPA • RED LAGER • STOUT • CALIFORNIA COMMON • CORRA ANTES QUE ACABE • DELIVERY RÁPIDO 🍺 HOJE NAS TORNEIRAS: PILSEN • IPA • RED LAGER • STOUT • CALIFORNIA COMMON
+{/* --- FUNCIONALIDADE 1: TAP LIST (CORREÇÃO FINAL) --- */}
+      <div className="bg-beer-gold text-black py-3 border-y-4 border-black relative z-20 overflow-hidden flex">
+         {/* O segredo é usar duas divs idênticas dentro de um flex container */}
+         
+         {/* Bloco 1 */}
+         <div className="animate-marquee whitespace-nowrap flex-shrink-0 min-w-full flex justify-around gap-8 px-4 font-black uppercase text-sm tracking-widest">
+            <span>🍺 HOJE NAS TORNEIRAS: PILSEN • IPA • RED LAGER • STOUT • CALIFORNIA COMMON • CORRA ANTES QUE ACABE • DELIVERY RÁPIDO 🍺</span>
+         </div>
+         
+         {/* Bloco 2 (Cópia exata para o loop) */}
+         <div className="animate-marquee whitespace-nowrap flex-shrink-0 min-w-full flex justify-around gap-8 px-4 font-black uppercase text-sm tracking-widest" aria-hidden="true">
+            <span>🍺 HOJE NAS TORNEIRAS: PILSEN • IPA • RED LAGER • STOUT • CALIFORNIA COMMON • CORRA ANTES QUE ACABE • DELIVERY RÁPIDO 🍺</span>
          </div>
       </div>
-
+            
       {/* DIFERENCIAIS */}
       <section className="py-24 bg-beer-dark border-b border-white/5 bg-noise relative z-20">
         <div className="max-w-7xl mx-auto px-4">
