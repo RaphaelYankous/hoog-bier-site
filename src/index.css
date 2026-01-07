@@ -1,98 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Oswald:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px;
+/* Configuração do Lenis (Scroll Suave) */
+html.lenis, html.lenis body {
+  height: auto;
 }
 
-/* --- ANIMAÇÕES GERAIS --- */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
-.animate-float { animation: float 6s ease-in-out infinite; }
 
-/* --- TEXTURA NOISE --- */
-.bg-noise { position: relative; }
-.bg-noise::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
   pointer-events: none;
-  z-index: 1;
-  opacity: 0.4;
 }
 
-/* --- REVEAL ON SCROLL --- */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+/* Scrollbar Personalizada (Opcional, mas recomendada) */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
+::-webkit-scrollbar-track {
+  background: #111;
 }
-
-/* --- PRELOADER --- */
-.preloader-exit {
-  animation: slideUp 0.8s ease-in-out forwards;
+::-webkit-scrollbar-thumb {
+  background: #F59E0B; /* beer-gold */
+  border-radius: 4px;
 }
-
-@keyframes slideUp {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-100%); }
-}
-
-@keyframes pulse-gold {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(245, 158, 11, 0)); transform: scale(1); }
-  50% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5)); transform: scale(1.05); }
-}
-
-.animate-pulse-gold {
-  animation: pulse-gold 2s infinite;
-}
-
-/* --- DIVISORES DE ONDA (SHAPE DIVIDERS) --- */
-.custom-shape-divider-bottom-1 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-    transform: rotate(180deg);
-}
-.custom-shape-divider-bottom-1 svg {
-    position: relative;
-    display: block;
-    width: calc(100% + 1.3px);
-    height: 100px; /* Altura da onda */
-}
-.custom-shape-divider-bottom-1 .shape-fill {
-    fill: #F59E0B; /* Cor beer-gold */
-}
-
-/* Onda Invertida (Topo) */
-.custom-shape-divider-top-1 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-}
-.custom-shape-divider-top-1 svg {
-    position: relative;
-    display: block;
-    width: calc(100% + 1.3px);
-    height: 100px;
-}
-.custom-shape-divider-top-1 .shape-fill {
-    fill: #F59E0B; /* Cor beer-gold */
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
 }
