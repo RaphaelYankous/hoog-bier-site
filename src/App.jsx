@@ -216,16 +216,12 @@ function App() {
         {isMenuOpen && (<div className="md:hidden bg-stone-900/95 backdrop-blur-xl absolute top-full left-0 w-full border-b border-white/10 animate-fade-in text-center py-8"><div className="flex flex-col gap-6"><a href="#home" onClick={() => setIsMenuOpen(false)} className="text-beer-gold font-bold uppercase tracking-widest">Início</a><a href="#cervejas" onClick={() => setIsMenuOpen(false)} className="text-beer-gold font-bold uppercase tracking-widest">Cervejas</a><button onClick={() => {setShowCalculator(true); setIsMenuOpen(false)}} className="text-beer-gold font-bold uppercase tracking-widest flex items-center justify-center gap-2"><Calculator size={16}/> Calculadora</button></div></div>)}
       </nav>
 
-      {/* 1. HERO (ESCURO - PRETO) - CORRIGIDO PARA LEGIBILIDADE */}
+      {/* 1. HERO (ESCURO - PRETO) */}
       <section ref={heroRef} id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-black text-white">
         <div className="absolute inset-0 z-0 opacity-40">
-           {/* Imagem de fundo com opacidade reduzida para destacar o texto */}
            <img ref={heroImgRef} src="/images/hero-bg.jpg" className="w-full h-[120%] object-cover" alt="Background"/>
         </div>
-        
-        {/* Camada escura sólida para garantir leitura */}
         <div className="absolute inset-0 bg-black/60"></div>
-        {/* Gradiente adicional */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black"></div>
         
         <div ref={heroTextRef} className="relative z-10 text-center px-4 max-w-5xl mx-auto pt-10">
@@ -234,11 +230,11 @@ function App() {
              <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-white drop-shadow-md">Desde 2018 em Contagem-MG</span>
           </div>
           <h1 className="text-6xl md:text-9xl font-serif font-bold text-white mb-6 leading-none uppercase drop-shadow-xl">
-             ALMA <br/>
-             <span className="text-beer-gold font-light italic tracking-normal lowercase text-[0.4em] block mt-2 drop-shadow-md">Pura</span>
+             hoog bier <br/>
+             <span className="text-beer-gold font-light italic tracking-normal lowercase text-[0.4em] block mt-2 drop-shadow-md">cervejaria artesanal</span>
           </h1>
           <p className="mt-8 text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-12 font-light leading-relaxed drop-shadow-md">
-             Não aceleramos processos. Engarrafamos o tempo e o sabor da verdadeira cerveja artesanal.
+             O melhor Chope Puro Malte para seu evento!.
           </p>
           <a href="https://wa.me/553125641240" target="_blank" className="bg-beer-gold text-black font-black py-4 px-10 rounded-full hover:bg-white transition-all transform hover:-translate-y-1 text-xs uppercase tracking-[0.2em] shadow-lg shadow-beer-gold/20">
              Fazer Pedido
@@ -363,7 +359,7 @@ function App() {
         </div>
       </Section>
 
-      {/* 6. GASTRONOMIA (CLARO) */}
+      {/* 6. GASTRONOMIA (CLARO) - COM VÍDEO CORRIGIDO (SEM ZOOM/CORTES) */}
       <Section theme="light" className="bg-paper-texture">
          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
             <div className="md:w-1/2">
@@ -387,12 +383,24 @@ function App() {
                   </div>
                </Reveal>
             </div>
-            <div className="md:w-1/2 relative">
-               <Reveal delay={200}>
-                  <img src="/images/california.jpg" className="rounded-[3rem] shadow-2xl transition-all duration-700 rotate-2 hover:rotate-0" />
-               </Reveal>
-            </div>
-         </div>
+{/* ... dentro da seção Gastronomia ... */}
+<div className="md:w-1/2 relative flex justify-center"> {/* Adicionado flex justify-center para centralizar */}
+   <Reveal delay={200}>
+      {/* MUDANÇA: 'w-fit' para a borda abraçar o vídeo e 'mx-auto' para centralizar */}
+      <div className="relative rounded-[3rem] shadow-2xl transition-all duration-700 rotate-2 hover:rotate-0 overflow-hidden border-4 border-white w-fit mx-auto">
+          <video 
+            src="/videos/gastronomia.mp4" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            // MUDANÇA: h-[500px] fixo, mas w-auto. Sem object-fit.
+            className="h-[500px] w-auto block" 
+          />
+      </div>
+   </Reveal>
+    </div>
+     </div>
       </Section>
 
       {/* 7. AGENDA (ESCURO - PRETO) */}
