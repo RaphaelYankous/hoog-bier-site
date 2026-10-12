@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { store } from '../lib/storage'
+import { markAgeOk } from '../lib/motion'
 
 const KEY = 'hoog:age:v1'
 const DAYS = 30
@@ -13,6 +14,9 @@ export function useAgeGate() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- precisa ler o localStorage após montar (SSR-safe)
     setStatus(valid ? 'ok' : 'ask')
   }, [])
+  useEffect(() => {
+    if (status === 'ok') markAgeOk()
+  }, [status])
   const confirm = () => {
     store.set(KEY, Date.now())
     setStatus('ok')

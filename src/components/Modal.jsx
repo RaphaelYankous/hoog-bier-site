@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { lockScroll, unlockScroll } from '../lib/motion'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -10,19 +11,22 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
  */
 export default function Modal({ title, onClose, children, side = false, labelledBy = 'modal-title', dismissible = true, wide = false }) {
   const panel = useRef(null)
+  // Ref para o callback: o efeito roda só ao abrir/fechar (senão cada re-render roubaria o foco dos campos).
+  const closeRef = useRef(onClose)
+  useEffect(() => {
+    closeRef.current = onClose
+  })
 
   useEffect(() => {
     const previous = document.activeElement
-    const html = document.documentElement
-    const prevOverflow = html.style.overflow
-    html.style.overflow = 'hidden'
+    lockScroll()
     const first = panel.current?.querySelector('[data-autofocus]') || panel.current?.querySelector(FOCUSABLE)
     first?.focus()
 
     const onKey = (e) => {
       if (e.key === 'Escape' && dismissible) {
         e.stopPropagation()
-        onClose?.()
+        closeRef.current?.()
       }
       if (e.key === 'Tab' && panel.current) {
         const nodes = [...panel.current.querySelectorAll(FOCUSABLE)].filter((n) => n.offsetParent !== null)
@@ -41,10 +45,10 @@ export default function Modal({ title, onClose, children, side = false, labelled
     document.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('keydown', onKey)
-      html.style.overflow = prevOverflow
+      unlockScroll()
       previous?.focus?.()
     }
-  }, [onClose, dismissible])
+  }, [dismissible])
 
   return createPortal(
     <div className={`fixed inset-0 z-[100] flex ${side ? 'justify-end' : 'items-center justify-center p-4'}`}>
@@ -54,10 +58,11 @@ export default function Modal({ title, onClose, children, side = false, labelled
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
+        data-lenis-prevent
         className={
           side
-            ? 'relative flex h-full w-full max-w-md animate-slide-in-right flex-col border-l border-white/10 bg-zinc-950 shadow-2xl'
-            : `relative max-h-[92vh] w-full ${wide ? 'max-w-4xl' : 'max-w-md'} animate-pop overflow-y-auto rounded-3xl border border-beer-gold/25 bg-zinc-950 p-6 shadow-2xl md:p-8`
+            ? 'relative flex h-full w-full max-w-md animate-slide-in-right flex-col rounded-l-[2rem] border-l border-white/10 bg-zinc-950 shadow-2xl'
+            : `relative max-h-[92vh] w-full ${wide ? 'max-w-4xl' : 'max-w-md'} animate-pop overflow-y-auto rounded-[2rem] border border-beer-gold/25 bg-zinc-950 p-6 shadow-2xl md:p-8`
         }
       >
         {dismissible && (

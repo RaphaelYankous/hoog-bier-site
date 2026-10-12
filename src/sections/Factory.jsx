@@ -20,7 +20,7 @@ export default function Factory() {
   const address = `${fullAddress()}, Brasil`
 
   return (
-    <section id="fabrica" aria-labelledby="fabrica-title" className="relative bg-black py-28">
+    <section id="fabrica" aria-labelledby="fabrica-title" className="relative bg-black py-28 md:py-36">
       <div className="mx-auto max-w-7xl px-4">
         <SectionHeading id="fabrica-title" eyebrow="Nossa casa" title="Fábrica" highlight="& loja">
           A Hoog Bier é um marco da produção artesanal em Contagem. Unimos tecnologia e tradição para entregar o chopp mais fresco da cidade.
@@ -28,7 +28,7 @@ export default function Factory() {
 
         <div className="grid items-stretch gap-8 lg:grid-cols-2">
           <Reveal className="h-full">
-            <div className="flex h-full flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-8 md:p-10">
+            <div className="flex h-full flex-col rounded-[2rem] border border-white/10 bg-gradient-to-br from-zinc-900 to-black p-8 md:p-10">
               <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
                 <h3 className="font-display text-3xl font-bold uppercase text-white">Visite-nos</h3>
                 {status && (
@@ -85,7 +85,7 @@ export default function Factory() {
           </Reveal>
 
           <Reveal delay={150} className="h-full">
-            <div className="relative min-h-[380px] overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 lg:h-full">
+            <div className="relative min-h-[380px] overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-900 lg:h-full">
               {mapOn ? (
                 <iframe title={`Mapa: ${fullAddress()}`} src={mapsEmbed(address)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 h-full w-full border-0 grayscale-[0.4] invert-[0.92] hue-rotate-180" allowFullScreen />
               ) : (
@@ -93,7 +93,7 @@ export default function Factory() {
                   <MapPin size={48} className="text-beer-gold" aria-hidden="true" />
                   <p className="font-display text-2xl font-bold uppercase text-white">{SITE.address.street}</p>
                   <p className="text-sm text-zinc-400">{SITE.address.district}, {SITE.address.city}/{SITE.address.state}</p>
-                  <button type="button" onClick={() => setMapOn(true)} className="btn-primary">
+                  <button type="button" onClick={() => setMapOn(true)} className="btn-primary" data-cursor="Mapa">
                     Carregar mapa
                   </button>
                   <p className="max-w-xs text-[11px] text-zinc-400">O mapa é do Google e só é carregado se você clicar, para proteger sua privacidade.</p>

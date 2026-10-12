@@ -7,10 +7,14 @@
     scroll-behavior: smooth;
     scroll-padding-top: 90px;
     -webkit-text-size-adjust: 100%;
+    interpolate-size: allow-keywords;
+  }
+  html.has-lenis {
+    scroll-behavior: auto;
   }
   body {
     @apply bg-beer-dark font-sans text-zinc-100 antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   ::selection {
     @apply bg-beer-gold text-black;
@@ -33,14 +37,39 @@
   .btn-primary,
   .btn-ghost,
   .btn-whatsapp,
-  .btn-success {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-display text-sm font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed;
+  .btn-success,
+  .btn-dark {
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-7 py-3.5 font-display text-sm font-semibold uppercase tracking-[0.15em] transition-[color,background-color,border-color,box-shadow,transform] duration-500 ease-expo active:scale-[0.97] disabled:cursor-not-allowed;
+  }
+  /* Preenchimento que "sobe" no hover, como um copo enchendo. */
+  .btn-primary::before,
+  .btn-ghost::before,
+  .btn-dark::before {
+    content: '';
+    @apply absolute inset-0 -z-10 translate-y-[101%] rounded-[inherit] transition-transform duration-500 ease-expo;
+  }
+  .btn-primary:hover::before,
+  .btn-ghost:hover::before,
+  .btn-dark:hover::before {
+    @apply translate-y-0;
   }
   .btn-primary {
-    @apply bg-beer-gold text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] hover:bg-amber-300 hover:shadow-[0_0_40px_rgba(245,158,11,0.5)];
+    @apply bg-beer-gold text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)];
+  }
+  .btn-primary::before {
+    @apply bg-foam;
   }
   .btn-ghost {
-    @apply border border-white/15 bg-white/5 text-white backdrop-blur hover:border-beer-gold hover:bg-beer-gold hover:text-black;
+    @apply border border-white/20 bg-white/5 text-white backdrop-blur hover:border-beer-gold hover:text-black;
+  }
+  .btn-ghost::before {
+    @apply bg-beer-gold;
+  }
+  .btn-dark {
+    @apply bg-beer-dark text-beer-gold hover:text-black;
+  }
+  .btn-dark::before {
+    @apply bg-foam;
   }
   .btn-whatsapp {
     @apply bg-green-600 text-white shadow-lg hover:bg-green-500;
@@ -49,7 +78,7 @@
     @apply bg-green-500 text-black;
   }
   .chip {
-    @apply flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:border-beer-gold hover:text-beer-gold;
+    @apply flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:border-beer-gold hover:text-beer-gold;
   }
   .field {
     @apply w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder:text-zinc-400 transition focus:border-beer-gold focus:outline-none focus:ring-1 focus:ring-beer-gold;
@@ -58,34 +87,73 @@
   .label {
     @apply mb-1.5 block text-xs font-bold uppercase tracking-widest text-beer-gold;
   }
+  .eyebrow {
+    @apply flex items-center gap-3 font-display text-xs font-medium uppercase tracking-[0.4em] text-beer-gold;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply h-px w-8 bg-current;
+  }
   .nav-link {
-    @apply relative font-display text-sm font-medium uppercase tracking-[0.18em] text-zinc-300 transition-colors hover:text-white;
+    @apply relative block overflow-hidden font-display text-sm font-medium uppercase tracking-[0.18em] text-zinc-300 transition-colors hover:text-white;
   }
   .nav-link::after {
     content: '';
-    @apply absolute -bottom-1.5 left-0 h-0.5 w-0 bg-beer-gold transition-all duration-300;
+    @apply absolute bottom-0 left-0 h-px w-full origin-right scale-x-0 bg-beer-gold transition-transform duration-500 ease-expo;
   }
   .nav-link:hover::after,
   .nav-link.is-active::after {
-    @apply w-full;
+    @apply origin-left scale-x-100;
   }
   .nav-link.is-active {
     @apply text-white;
   }
   .card-hover {
-    @apply transition-all duration-500 hover:-translate-y-1.5 hover:border-beer-gold/40 hover:shadow-[0_20px_50px_-20px_rgba(245,158,11,0.25)];
+    @apply transition-all duration-500 ease-expo hover:-translate-y-1.5 hover:border-beer-gold/40 hover:shadow-[0_20px_50px_-20px_rgba(245,158,11,0.25)];
   }
   .text-gradient-gold {
     @apply bg-gradient-to-r from-beer-gold via-yellow-200 to-beer-gold bg-clip-text text-transparent;
     background-size: 200% auto;
     animation: shine 6s linear infinite;
   }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px currentColor;
+  }
   .skip-link {
     @apply fixed left-4 top-4 z-[300] -translate-y-24 rounded-lg bg-beer-gold px-4 py-2 font-bold text-black transition-transform focus:translate-y-0;
   }
 }
 
-/* --- Textura de ruído --- */
+/* --- Grão de filme sobre o site inteiro (textura editorial) --- */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-4%, 3%);
+  }
+  40% {
+    transform: translate(3%, -5%);
+  }
+  60% {
+    transform: translate(-6%, -2%);
+  }
+  80% {
+    transform: translate(5%, 4%);
+  }
+}
+
 .bg-noise::before {
   content: '';
   position: absolute;
@@ -104,17 +172,96 @@
   }
 }
 
-/* --- Reveal ao rolar (só esconde se houver JS; sem JS tudo fica visível) --- */
-.js .reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+/* --- Linhas mascaradas do SplitText --- */
+.split-line-mask {
+  padding: 0 0.08em 0.08em;
+  margin: 0 -0.08em -0.08em;
 }
-.js .reveal.is-in {
+
+/* --- Líquido (onda + espuma) --- */
+.liquid-wave {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 50% 100%;
+}
+
+/* --- Bolhas subindo dentro do líquido --- */
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 244, 220, 0.55);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 60%);
+  animation: rise linear infinite;
+}
+
+/* --- Acordeão com altura animada (progressivo: navegadores sem suporte só abrem) --- */
+details.acc::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    content-visibility 0.6s allow-discrete;
+}
+details.acc[open]::details-content {
+  block-size: auto;
+}
+
+/* --- Cursor customizado (apenas mouse) --- */
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 250;
+  pointer-events: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  color: #0f0e0c;
+  font: 700 10px/1 'Oswald Variable', sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition:
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s,
+    border-color 0.3s,
+    opacity 0.3s;
+}
+.cursor span {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cursor.is-link {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: rgba(245, 158, 11, 0.15);
+}
+.cursor.is-label {
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+.cursor.is-label span {
   opacity: 1;
-  transform: none;
+}
+.cursor.is-hidden {
+  opacity: 0;
+}
+
+/* --- Lenis: o mapa continua interativo --- */
+.lenis.lenis-smooth iframe {
+  pointer-events: auto;
 }
 
 /* --- Letreiro: pausa ao passar o mouse --- */
@@ -122,41 +269,9 @@
   animation-play-state: paused;
 }
 
-/* --- Ondas decorativas --- */
-.wave-bottom,
-.wave-top {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-  z-index: 1;
-}
-.wave-bottom {
-  bottom: -1px;
-  transform: rotate(180deg);
-}
-.wave-top {
-  top: -1px;
-}
-.wave-bottom svg,
-.wave-top svg {
-  display: block;
-  width: 100%;
-  height: 90px;
-  fill: #f59e0b;
-}
-
 /* --- Radar de sabor --- */
 .radar-shape {
-  transform-origin: 100px 100px;
-  animation: radar-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-@keyframes radar-in {
-  from {
-    transform: scale(0.2);
-    opacity: 0;
-  }
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --- Slider --- */
@@ -171,23 +286,24 @@
 }
 .range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #fff;
-  border: 4px solid #f59e0b;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  transition: transform 0.15s;
+  border: 5px solid #f59e0b;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.15), 0 2px 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.range::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+.range::-webkit-slider-thumb:hover,
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.2);
 }
 .range::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
   background: #fff;
-  border: 4px solid #f59e0b;
+  border: 5px solid #f59e0b;
 }
 
 /* --- Texto jurídico --- */
@@ -220,11 +336,12 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .js .reveal {
-    opacity: 1;
-    transform: none;
-  }
-  .animate-marquee {
+  .animate-marquee,
+  .grain,
+  .bubble {
     animation: none !important;
+  }
+  .cursor {
+    display: none;
   }
 }

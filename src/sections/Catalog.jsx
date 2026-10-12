@@ -1,53 +1,72 @@
-import { useState } from 'react'
-import Reveal from '../components/Reveal'
-import SectionHeading from '../components/SectionHeading'
+import { useCallback, useEffect, useState } from 'react'
+import SplitReveal from '../components/motion/SplitReveal'
 import PosterModal from '../components/PosterModal'
-import BeerCard from './BeerCard'
+import Reveal from '../components/Reveal'
+import BeerStage from './BeerStage'
 import BeerQuiz from './BeerQuiz'
-import { BEERS, CATEGORIES } from '../data/beers'
+import { BEERS } from '../data/beers'
+import { scrollToTarget } from '../lib/motion'
+
+const idFromHash = (hash) => {
+  const m = /^#cerveja-(.+)$/.exec(hash || '')
+  return m && BEERS.some((b) => b.id === m[1]) ? m[1] : null
+}
 
 export default function Catalog() {
-  const [category, setCategory] = useState('all')
-  const [highlight, setHighlight] = useState(null)
+  const [active, setActive] = useState(BEERS[0].id)
   const [poster, setPoster] = useState(null)
-  const list = category === 'all' ? BEERS : BEERS.filter((b) => b.category === category)
+
+  const show = useCallback((id) => {
+    setActive(id)
+    scrollToTarget('#palco')
+  }, [])
+
+  // Links "#cerveja-xxx" (harmonizações, quiz, URL compartilhada) abrem a cerveja no palco.
+  useEffect(() => {
+    const fromUrl = idFromHash(window.location.hash)
+    if (fromUrl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- deep link lido após montar (SSR-safe)
+      setActive(fromUrl)
+    }
+    const onClick = (e) => {
+      const a = e.target instanceof Element && e.target.closest('a[href^="#cerveja-"]')
+      const id = a && idFromHash(a.getAttribute('href'))
+      if (!id) return
+      e.preventDefault()
+      e.stopPropagation()
+      show(id)
+      history.replaceState(null, '', `#cerveja-${id}`)
+    }
+    document.addEventListener('click', onClick, true)
+    return () => document.removeEventListener('click', onClick, true)
+  }, [show])
 
   return (
-    <section id="cervejas" aria-labelledby="catalogo-title" className="bg-noise relative overflow-hidden bg-beer-dark pb-32 pt-28">
+    <section id="cervejas" aria-labelledby="catalogo-title" className="relative z-10 overflow-hidden rounded-t-[2.5rem] border-t border-white/10 bg-[#13110e] pb-32 pt-24 shadow-[0_-40px_100px_rgba(0,0,0,0.7)] md:rounded-t-[4rem] md:pt-32">
       <div className="relative z-10 mx-auto max-w-7xl px-4">
-        <SectionHeading id="catalogo-title" eyebrow="Nossa alma" title="Catálogo" highlight="Hoog">
-          Sete estilos artesanais, todos feitos só com água, malte, lúpulo e levedura. Escolha o formato, monte o pedido e finalize pelo WhatsApp.
-        </SectionHeading>
-
-        <Reveal>
-          <BeerQuiz onResult={setHighlight} />
-        </Reveal>
-
-        <div role="group" aria-label="Filtrar cervejas por estilo" className="mb-24 flex flex-wrap justify-center gap-2">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={category === c.id}
-              onClick={() => setCategory(c.id)}
-              className={`rounded-full border px-5 py-2.5 font-display text-sm font-medium uppercase tracking-widest transition ${category === c.id ? 'border-beer-gold bg-beer-gold text-black' : 'border-white/15 text-zinc-300 hover:border-beer-gold hover:text-beer-gold'}`}
-            >
-              {c.label}
-            </button>
-          ))}
+        {/* Cabeçalho compacto: o palco das cervejas precisa aparecer logo depois do hero. */}
+        <div className="mb-12 grid items-end gap-6 md:mb-14 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
+          <div>
+            <Reveal y={20}>
+              <p className="eyebrow mb-5">Nossas cervejas</p>
+            </Reveal>
+            <SplitReveal id="catalogo-title" className="font-display text-[clamp(2.6rem,5.2vw,4.75rem)] font-bold uppercase leading-[0.92] tracking-tight text-white">
+              Sete estilos, <span className="font-serif font-normal normal-case italic text-beer-gold">nenhum atalho</span>
+            </SplitReveal>
+          </div>
+          <Reveal delay={150} y={24}>
+            <p className="max-w-md text-base leading-relaxed text-zinc-400 md:text-lg">Todos feitos só com água, malte, lúpulo e levedura. Escolha a cerveja e o formato, monte o pedido e finalize pelo WhatsApp.</p>
+          </Reveal>
         </div>
 
-        <ul className="grid grid-cols-1 gap-x-8 gap-y-24 pt-6 md:grid-cols-2 lg:grid-cols-3">
-          {list.map((beer, i) => (
-            <li key={beer.id} className={list.length % 3 === 1 && i === list.length - 1 ? 'lg:col-start-2' : ''}>
-              <Reveal delay={(i % 3) * 100} className="h-full">
-                <BeerCard beer={beer} highlighted={highlight === beer.id} onPoster={setPoster} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div id="palco">
+          <BeerStage activeId={active} onSelect={setActive} onPoster={setPoster} />
+        </div>
 
+        <Reveal>
+          <BeerQuiz onResult={setActive} />
+        </Reveal>
+      </div>
 
       {poster && <PosterModal beer={poster} onClose={() => setPoster(null)} />}
     </section>

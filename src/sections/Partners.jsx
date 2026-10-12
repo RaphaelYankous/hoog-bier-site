@@ -18,7 +18,7 @@ export default function Partners() {
   if (status === 'error' || (status === 'ready' && rows.length === 0)) return null
 
   return (
-    <section id="onde-encontrar" aria-labelledby="parceiros-title" className="border-t border-white/5 bg-black py-24">
+    <section id="onde-encontrar" aria-labelledby="parceiros-title" className="border-t border-white/5 bg-black py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4">
         <SectionHeading id="parceiros-title" eyebrow="Pontos de venda" title="Onde encontrar" highlight="Hoog">
           Bares, restaurantes e empórios que servem Hoog perto de você.
@@ -36,7 +36,7 @@ export default function Partners() {
           {list.map((p, i) => (
             <li key={`${p.nome}-${i}`}>
               <Reveal delay={(i % 3) * 80} className="h-full">
-                <a href={mapsQuery(`${p.nome} ${p.endereco || ''}`)} target="_blank" rel="noopener noreferrer" className="card-hover group flex h-full items-start gap-4 rounded-2xl border border-white/10 p-5 transition hover:border-beer-gold">
+                <a href={mapsQuery(`${p.nome} ${p.endereco || ''}`)} target="_blank" rel="noopener noreferrer" className="card-hover group flex h-full items-start gap-4 rounded-[1.5rem] border border-white/10 p-6 transition hover:border-beer-gold">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-beer-gold/10 text-beer-gold transition group-hover:bg-beer-gold group-hover:text-black">
                     <MapPin size={20} aria-hidden="true" />
                   </span>

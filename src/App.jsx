@@ -9,9 +9,11 @@ import PrivacyModal from './components/PrivacyModal'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import WhatsAppFloat from './components/WhatsAppFloat'
+import Cursor from './components/motion/Cursor'
 import Hero from './sections/Hero'
+import Manifesto from './sections/Manifesto'
 import Marquee from './sections/Marquee'
-import Features from './sections/Features'
+import Process from './sections/Process'
 import Catalog from './sections/Catalog'
 import Events from './sections/Events'
 import Experience from './sections/Experience'
@@ -34,10 +36,12 @@ export default function App() {
       </a>
       <Navbar />
       <main id="conteudo">
+        {/* Narrativa: hero → as cervejas (sobem por cima do hero) → manifesto → do grão ao copo → serviço → comunidade */}
         <Hero />
-        <Marquee />
-        <Features />
         <Catalog />
+        <Marquee />
+        <Manifesto />
+        <Process />
         <Events />
         <Experience />
         <Agenda onReserve={() => setReserva(true)} />
@@ -55,6 +59,8 @@ export default function App() {
       {privacy && <PrivacyModal onClose={() => setPrivacy(false)} />}
       <ConsentBanner enabled={age.status === 'ok'} onOpenPrivacy={() => setPrivacy(true)} />
       <AgeGate status={age.status} onConfirm={age.confirm} onDeny={age.deny} />
+      <Cursor />
+      <div className="grain" aria-hidden="true" />
     </CartProvider>
   )
 }

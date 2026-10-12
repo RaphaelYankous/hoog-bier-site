@@ -1,15 +1,24 @@
 import Reveal from './Reveal'
+import SplitReveal from './motion/SplitReveal'
 
-export default function SectionHeading({ eyebrow, title, highlight, children, align = 'center', as: Tag = 'h2', light = false, id }) {
+export default function SectionHeading({ eyebrow, title, highlight, children, align = 'center', as = 'h2', light = false, id, className = '' }) {
+  const center = align === 'center'
   return (
-    <Reveal className={`mb-14 md:mb-20 ${align === 'center' ? 'text-center mx-auto' : ''} max-w-3xl ${align === 'center' ? '' : ''}`}>
+    <div className={`mb-14 max-w-4xl md:mb-20 ${center ? 'mx-auto text-center' : ''} ${className}`}>
       {eyebrow && (
-        <span className={`mb-4 block font-display text-xs font-medium uppercase tracking-[0.4em] ${light ? 'text-black/70' : 'text-beer-gold'}`}>{eyebrow}</span>
+        <Reveal y={20}>
+          <p className={`eyebrow mb-6 ${center ? 'justify-center' : ''} ${light ? '!text-beer-dark' : ''}`}>{eyebrow}</p>
+        </Reveal>
       )}
-      <Tag id={id} className={`font-display text-4xl font-bold uppercase leading-[1.02] tracking-tight md:text-6xl ${light ? 'text-black' : 'text-white'}`}>
-        {title} {highlight && <span className={light ? 'text-white' : 'text-gradient-gold'}>{highlight}</span>}
-      </Tag>
-      {children && <p className={`mt-5 text-base leading-relaxed md:text-lg ${light ? 'text-black/75' : 'text-zinc-400'}`}>{children}</p>}
-    </Reveal>
+      <SplitReveal as={as} id={id} className={`font-display text-[clamp(2.6rem,6.5vw,5.5rem)] font-bold uppercase leading-[0.92] tracking-tight ${light ? 'text-beer-dark' : 'text-white'}`}>
+        {title}{' '}
+        {highlight && <span className={`font-serif font-normal normal-case italic ${light ? 'text-white' : 'text-beer-gold'}`}>{highlight}</span>}
+      </SplitReveal>
+      {children && (
+        <Reveal delay={150} y={24}>
+          <p className={`mt-6 text-base leading-relaxed md:text-lg ${center ? 'mx-auto max-w-2xl' : 'max-w-2xl'} ${light ? 'text-beer-dark/75' : 'text-zinc-400'}`}>{children}</p>
+        </Reveal>
+      )}
+    </div>
   )
 }
